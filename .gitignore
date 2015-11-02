@@ -1,3 +1,7 @@
+# eggfly
+.metadata
+RemoteSystemsTempFiles
+
 # Object files
 *.o
 *.ko
