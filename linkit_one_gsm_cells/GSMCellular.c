@@ -24,6 +24,8 @@
 #include "vmcmd.h"
 #include "vmlog.h"
 #include "vmgsm_cell.h"
+#include "vmgsm_gprs.h"
+
 
 #define COMMAND_PORT  1000 /* AT command port */
 
