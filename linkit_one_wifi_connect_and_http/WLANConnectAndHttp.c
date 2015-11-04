@@ -1,49 +1,101 @@
-/*
- This sample code is in public domain.
-
- This sample code is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
-
-/* 
- This sample connects to HTTP(no secure) to retrieve index.html from labs.mediatek.com and print to vm_log.
-
- It calls the API vm_https_register_context_and_callback() to register the callback functions,
- then set the channel by vm_https_set_channel(), after the channel is established,
- it will send out the request by vm_https_send_request() and read the response by
- vm_https_read_content().
-
- You can change the url by modify macro VMHTTPS_TEST_URL.
- Before run this example, please set the APN information first by modify macros.
+/**
+ * Send HTTP request to get DoubanFM's JSON via WLAN
+ *
+ * This sample connects to HTTP(no secure) to retrieve content and print to vm_log.
+ * It calls the API vm_https_register_context_and_callback() to register the callback functions,
+ * then set the channel by vm_https_set_channel(), after the channel is established,
+ * it will send out the request by vm_https_send_request() and read the response by
+ * vm_https_read_content().
  */
 #include <string.h>
 #include "vmtype.h" 
 #include "vmboard.h"
 #include "vmsystem.h"
 #include "vmlog.h" 
-#include "vmcmd.h" 
+#include "vmcmd.h"
 #include "vmdcl.h"
 #include "vmdcl_gpio.h"
 #include "vmthread.h"
+#include "vmwlan.h"
 
 #include "ResID.h"
-#include "HTTP.h"
+#include "WLANConnectAndHttp.h"
 #include "vmhttps.h"
 #include "vmtimer.h"
-#include "vmgsm_gprs.h"
 
 /* Configurable macros */
-#define CUST_APN    "uninet"         /* The APN of your test SIM */
-#define USING_PROXY VM_TRUE         /* Whether your SIM uses proxy */
-#define PROXY_ADDRESS   "10.0.0.172"    /* The proxy address */
-#define PROXY_PORT  80              /* The proxy port */
 
-#define VMHTTPS_TEST_DELAY 60000    /* 60 seconds */
-#define VMHTTPS_TEST_URL "http://labs.mediatek.com"
+#define VMHTTPS_TEST_DELAY 10000    /* delay time after initial WLAN */
+#define VMHTTPS_TEST_URL "http://douban.fm/j/mine/playlist?type=n&channel=1&from=mainsite"
+
+#define AP_SSID "360wifi-PSSGZF-2.4G"
+#define AP_PASSWORD "homewifi"
+#define AP_AUTHORIZE_MODE   VM_WLAN_AUTHORIZE_MODE_WPA2_ONLY_PSK
 
 VMUINT8 g_channel_id;
 VMINT g_read_seg_num;
+
+static wlan_connect_callback(void *user_data,
+		vm_wlan_connect_result_t *connect_result) {
+	if (VM_WLAN_SUCCESS == connect_result->result) {
+		vm_log_info("Connect to AP successfully");
+	} else {
+		vm_log_info("Connect to AP failed!");
+	}
+	vm_log_info("AP info shows below:");
+	vm_log_info("connect result:%d", connect_result->result);
+	vm_log_info("connect cause:%d", connect_result->cause);
+	vm_log_info("connect bssid:%s", connect_result->bssid);
+	vm_log_info("connect ssid:%s", connect_result->ssid);
+	vm_log_info("connect init_by_socket:%d", connect_result->init_by_socket);
+	vm_log_info("connect ssid_length:%d", connect_result->ssid_length);
+	vm_log_info("connect channel_number:%d", connect_result->channel_number);
+	vm_log_info("connect profile_id:%d", connect_result->profile_id);
+	vm_log_info("connect authorize_type:%d", connect_result->authorize_type);
+	vm_log_info("connect eap_peap_authorize_type:%d",
+			connect_result->eap_peap_authorize_type);
+	vm_log_info("connect eap_ttls_authorize_type:%d",
+			connect_result->eap_ttls_authorize_type);
+	vm_log_info("connect connection_type:%d", connect_result->connection_type);
+	vm_log_info("connect encry_mode:%d", connect_result->encry_mode);
+	vm_log_info("connect passphrase:%s", connect_result->passphrase);
+	vm_log_info("connect passphrase_length:%d",
+			connect_result->passphrase_length);
+	vm_log_info("connect need_login:%d", connect_result->need_login);
+	vm_log_info("connect cancel_by_disconnect:%d",
+			connect_result->cancel_by_disconnect);
+	vm_log_info("connect rssi:%d", connect_result->rssi);
+}
+
+static void wlan_connect(void) {
+	vm_wlan_ap_info_t ap_info;
+	VM_RESULT result;
+
+	strcpy(ap_info.ssid, AP_SSID);
+	strcpy(ap_info.password, AP_PASSWORD);
+	ap_info.authorize_mode = AP_AUTHORIZE_MODE;
+	result = vm_wlan_connect(&ap_info, wlan_connect_callback, NULL);
+	vm_log_info("wlan_connect, return result:%d", result);
+}
+
+static void wlan_callback(void* user_danta, VM_WLAN_REQUEST_RESULT result_type) {
+	vm_log_debug("wlan result:%d", result_type);
+	if (VM_WLAN_REQUEST_DONE == result_type) {
+		wlan_connect();
+	}
+}
+
+static void wlan_mode_set(void) {
+	VM_RESULT result;
+	result = vm_wlan_mode_set(VM_WLAN_MODE_STA, wlan_callback, NULL);
+	vm_log_info("mode set return value:%d", result);
+}
+
+VMINT32 wlan_init_thread(VM_THREAD_HANDLE thread_handle, void* user_data) {
+	wlan_mode_set();
+	return 0;
+}
+
 static void http_send_request_set_channel_rsp_cb(VMUINT32 req_id,
 		VMUINT8 channel_id, VMUINT8 result) {
 	VMINT ret = -1;
@@ -124,23 +176,12 @@ static void http_send_status_query_rsp_cb(VMUINT8 status) {
 	vm_log_debug("http_send_status_query_rsp_cb()");
 }
 
-void set_custom_apn(void) {
-	vm_gsm_gprs_apn_info_t apn_info;
-
-	memset(&apn_info, 0, sizeof(apn_info));
-	strcpy(apn_info.apn, CUST_APN);
-	strcpy(apn_info.proxy_address, PROXY_ADDRESS);
-	apn_info.proxy_port = PROXY_PORT;
-	apn_info.using_proxy = USING_PROXY;
-	vm_gsm_gprs_set_customized_apn_info(&apn_info);
-}
-
 static void http_send_request(VM_TIMER_ID_NON_PRECISE timer_id, void* user_data) {
 	/*----------------------------------------------------------------*/
 	/* Local Variables                                                */
 	/*----------------------------------------------------------------*/
 	VMINT ret = -1;
-	VMINT apn = VM_BEARER_DATA_ACCOUNT_TYPE_GPRS_CUSTOMIZED_APN;
+	VMINT apn = VM_BEARER_DATA_ACCOUNT_TYPE_WLAN;
 	vm_https_callbacks_t callbacks = { http_send_request_set_channel_rsp_cb,
 			http_unset_channel_rsp_cb, http_send_release_all_req_rsp_cb,
 			http_send_termination_ind_cb, http_send_read_request_rsp_cb,
@@ -151,7 +192,6 @@ static void http_send_request(VM_TIMER_ID_NON_PRECISE timer_id, void* user_data)
 	/*----------------------------------------------------------------*/
 
 	do {
-		set_custom_apn();
 		vm_timer_delete_non_precise(timer_id);
 		ret = vm_https_register_context_and_callback(apn, &callbacks);
 
@@ -168,7 +208,9 @@ static void http_send_request(VM_TIMER_ID_NON_PRECISE timer_id, void* user_data)
 void handle_sysevt(VMINT message, VMINT param) {
 	switch (message) {
 	case VM_EVENT_CREATE:
-		vm_timer_create_non_precise(60000, http_send_request, NULL);
+		vm_thread_create(wlan_init_thread, NULL, 255);
+		vm_timer_create_non_precise(VMHTTPS_TEST_DELAY, http_send_request,
+		NULL);
 		break;
 
 	case VM_EVENT_QUIT:
@@ -179,4 +221,3 @@ void handle_sysevt(VMINT message, VMINT param) {
 void vm_main(void) {
 	vm_pmng_register_system_event_callback(handle_sysevt);
 }
-
