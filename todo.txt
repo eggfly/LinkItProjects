@@ -1,0 +1,4 @@
+parse json
+play mp3 stream from network
+ble gatt and push notifications
+
