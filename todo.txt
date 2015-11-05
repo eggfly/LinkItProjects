@@ -1,4 +1,4 @@
 parse json
 play mp3 stream from network
-ble gatt and push notifications
-
+BLE gatt and push notifications
+malloc or vm_malloc
