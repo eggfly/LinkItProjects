@@ -39,6 +39,7 @@
 static VMINT g_handle = -1; /* The handle of play */
 static VMINT g_interrupt_handle = 0; /* The handle of interrupt */
 
+void audio_play();
 /* The callback function when playing. */
 void audio_play_callback(VM_AUDIO_HANDLE handle, VM_AUDIO_RESULT result,
 		void* userdata) {
@@ -48,6 +49,8 @@ void audio_play_callback(VM_AUDIO_HANDLE handle, VM_AUDIO_RESULT result,
 		vm_audio_play_stop(g_handle);
 		vm_audio_play_close(g_handle);
 		g_handle = -1;
+		// eggfly
+		audio_play();
 		break;
 	case VM_AUDIO_RESULT_INTERRUPT:
 		/* The playback is terminated by another application, for example an incoming call */
@@ -98,7 +101,7 @@ void audio_play() {
 	/* start to play */
 	vm_audio_play_start(g_handle);
 	/* set volume */
-	vm_audio_set_volume(VM_AUDIO_VOLUME_4);
+	vm_audio_set_volume(VM_AUDIO_VOLUME_5);
 	/* register interrupt callback */
 	g_interrupt_handle = vm_audio_register_interrupt_callback(
 			audio_play_callback, NULL);
