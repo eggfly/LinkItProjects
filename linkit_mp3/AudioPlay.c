@@ -65,6 +65,11 @@ void audio_play_callback(VM_AUDIO_HANDLE handle, VM_AUDIO_RESULT result,
 
 /* Play the audio file. */
 void audio_play() {
+	// eggfly battery
+	VMINT battery_level = 0;
+	battery_level = vm_pwr_get_battery_level();
+	vm_log_info("[Battery GATT] battery_level:%d", battery_level);
+
 	VMINT drv;
 	VMWCHAR w_file_name[MAX_NAME_LEN] = { 0 };
 	VMCHAR file_name[MAX_NAME_LEN];
@@ -74,13 +79,33 @@ void audio_play() {
 	/* get file path */
 	drv = vm_fs_get_removable_drive_letter();
 	if (drv < 0) {
+		vm_log_fatal("not find removable");
+
 		drv = vm_fs_get_internal_drive_letter();
 		if (drv < 0) {
 			vm_log_fatal("not find driver");
 			return;
 		}
 	}
-	sprintf(file_name, (VMSTR) "%c:\\audio.mp3", drv);
+	char * path = NULL;
+	switch (battery_level) {
+	case 0:
+		path = "%c:\\1769863605_1760787_l.mp3";
+		break;
+	case 25:
+		path = "%c:\\1769863607_1760789_l.mp3";
+		break;
+	case 50:
+		path = "%c:\\1769863610_1760792_l.mp3";
+		break;
+	case 75:
+		path = "%c:\\1769863612_1760794_l.mp3";
+		break;
+	case 100:
+		path = "%c:\\audio2.mp3";
+		break;
+	}
+	sprintf(file_name, (VMSTR) path, drv);
 	vm_chset_ascii_to_ucs2(w_file_name, MAX_NAME_LEN, file_name);
 
 	/* set play parameters */
@@ -101,7 +126,7 @@ void audio_play() {
 	/* start to play */
 	vm_audio_play_start(g_handle);
 	/* set volume */
-	vm_audio_set_volume(VM_AUDIO_VOLUME_5);
+	vm_audio_set_volume(VM_AUDIO_VOLUME_2);
 	/* register interrupt callback */
 	g_interrupt_handle = vm_audio_register_interrupt_callback(
 			audio_play_callback, NULL);

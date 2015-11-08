@@ -90,7 +90,7 @@ static void audio_put_data() {
 	{
 		param.start_time = 0;
 		param.audio_path = VM_AUDIO_DEVICE_SPEAKER2;
-		param.volume = VM_AUDIO_VOLUME_3;
+		param.volume = VM_AUDIO_VOLUME_2;
 		ret = vm_audio_stream_play_start(g_handle, &param);
 		g_flag = 1;
 	}
@@ -131,7 +131,7 @@ void audio_open_file() {
 			return;
 		}
 	}
-	sprintf(file_name, "%c:\\audio.mp3", drv);
+	sprintf(file_name, "%c:\\audio2.mp3", drv);
 	vm_chset_ascii_to_ucs2(w_file_name, MAX_NAME_LEN, file_name);
 	g_file_hdl = vm_fs_open(w_file_name, VM_FS_MODE_READ, TRUE);
 	if (g_file_hdl < 0) {
@@ -153,15 +153,19 @@ void audio_put_data_timer_cb(VMINT tid, void* user_data) {
 	audio_put_data();
 }
 
+void start_play() {
+	/* start playing when following command is received: AT+[1000]Test01 */
+	g_offset = 0;
+	audio_open_file();
+	g_timer_id = vm_timer_create_precise(1000, audio_put_data_timer_cb, NULL);
+	audio_put_data();
+}
+
 /* AT command callback, which will be invoked when you send AT command from the monitor tool */
 static void at_callback(vm_cmd_command_t *param, void *user_data) {
 	if (strcmp("Test01", (char*) param->command_buffer) == 0) {
 		/* start playing when following command is received: AT+[1000]Test01 */
-		g_offset = 0;
-		audio_open_file();
-		g_timer_id = vm_timer_create_precise(1000, audio_put_data_timer_cb,
-				NULL);
-		audio_put_data();
+		start_play(g_offset, g_timer_id);
 	} else if (strcmp("Test02", (char*) param->command_buffer) == 0) {
 		/* get play time when following command is received: AT+[1000]Test02 */
 		if (g_handle != 0) {
@@ -184,6 +188,7 @@ void handle_sysevt(VMINT message, VMINT param) {
 	switch (message) {
 	case VM_EVENT_CREATE:
 		vm_cmd_open_port(COMMAND_PORT, at_callback, NULL);
+		start_play();
 		break;
 	case VM_EVENT_QUIT:
 		vm_cmd_close_port(COMMAND_PORT);

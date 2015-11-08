@@ -35,7 +35,7 @@
     <category>UDP</category>
     <category>SysFile</category>
     <category>sso</category>
-    <defaultliblist>Mediatek; Standard; Memory; Framework; Power Management; Comman</defaultliblist>
+    <defaultliblist>Mediatek; Standard; Memory; Framework; Comman</defaultliblist>
   </APIAuth>
   <targetconfig>
     <mem>800</mem>
