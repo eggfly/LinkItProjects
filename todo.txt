@@ -2,6 +2,8 @@ parse json
 play mp3 stream from network
 BLE gatt and push notifications
 malloc or vm_malloc
+wifi scan and try connect
+wifi disconnect event
 
 problems:
 play midi
