@@ -18,26 +18,70 @@
 #include "vmthread.h"
 #include "vmwlan.h"
 
+#include "vmpwr.h"
+#include "vmfs.h"
+
 #include "ResID.h"
-#include "WLANConnectAndHttp.h"
+#include "douban_fm.h"
 #include "vmhttps.h"
 #include "vmtimer.h"
 
-#include "douban.h"
-
 /* Configurable macros */
-
 #define VMHTTPS_TEST_DELAY 10000    /* delay time after initial WLAN */
-#define VMHTTPS_TEST_URL "http://douban.fm/j/mine/playlist?type=n&channel=1&from=mainsite"
+
+// #define VMHTTPS_TEST_URL "http://douban.fm/j/mine/playlist?type=n&channel=1&from=mainsite"
+//#define VMHTTPS_TEST_URL "http://eggfly.qiniudn.com/love.swf"
+#define VMHTTPS_TEST_URL "http://eggfly.qiniudn.com/dong2k.mp3"
 
 #define AP_SSID "360wifi-PSSGZF-2.4G"
 #define AP_PASSWORD "homewifi"
 #define AP_AUTHORIZE_MODE   VM_WLAN_AUTHORIZE_MODE_WPA2_ONLY_PSK
 
+#define BLOCK_SIZE 100
+
 VMUINT8 g_channel_id;
 VMINT g_read_seg_num;
 
-static wlan_connect_callback(void *user_data,
+VM_FS_HANDLE filehandle = -1;
+
+void fs_close() {
+	vm_log_info("fs_close");
+	/* close file */
+	vm_fs_close(filehandle);
+}
+
+void fs_open() {
+	vm_log_info("fs_open");
+	VMCHAR filename[VM_FS_MAX_PATH_LENGTH] = { 0 };
+	VMWCHAR wfilename[VM_FS_MAX_PATH_LENGTH] = { 0 };
+	VMCHAR letter = vm_fs_get_removable_drive_letter();
+	sprintf(filename, "%c:\\%s", letter, "test_file.bin");
+	vm_chset_ascii_to_ucs2(wfilename, sizeof(wfilename), filename);
+	/* create file */
+	if ((filehandle = vm_fs_open(wfilename, VM_FS_MODE_CREATE_ALWAYS_WRITE,
+	TRUE)) < 0) {
+		vm_log_info("Failed to create file: %s", filename);
+		return;
+	}
+	vm_log_info("Success to create file: %s", filename);
+}
+
+void fs_write(VMUINT8 *data, VMUINT32 length) {
+	// vm_log_info("fs_write");
+	VMUINT writelen = 0;
+	VMINT ret = 0;
+
+	/* write file */
+	ret = vm_fs_write(filehandle, data, length, &writelen);
+	if (ret < 0) {
+		vm_log_info("Failed to write file");
+		return;
+	}
+	// vm_log_info("Success to write file, length: %d", writelen);
+	return;
+}
+
+static void wlan_connect_callback(void *user_data,
 		vm_wlan_connect_result_t *connect_result) {
 	if (VM_WLAN_SUCCESS == connect_result->result) {
 		vm_log_info("Connect to AP successfully");
@@ -99,14 +143,14 @@ VMINT32 wlan_init_thread(VM_THREAD_HANDLE thread_handle, void* user_data) {
 }
 
 static void http_send_request_set_channel_rsp_cb(VMUINT32 req_id,
-		VMUINT8 channel_id, VMUINT8 result) {
+		VMUINT8 channel_id, VM_HTTPS_RESULT result) {
 	VMINT ret = -1;
 
 	ret = vm_https_send_request(0, /* Request ID */
 	VM_HTTPS_METHOD_GET, /* HTTP Method Constant */
 	VM_HTTPS_OPTION_NO_CACHE, /* HTTP request options */
 	VM_HTTPS_DATA_TYPE_BUFFER, /* Reply type (wps_data_type_enum) */
-	100, /* bytes of data to be sent in reply at a time. If data is more that this, multiple response would be there */
+	BLOCK_SIZE, /* bytes of data to be sent in reply at a time. If data is more that this, multiple response would be there */
 	(VMUINT8 *) VMHTTPS_TEST_URL, /* The request URL */
 	strlen(VMHTTPS_TEST_URL), /* The request URL length */
 	NULL, /* The request header */
@@ -118,29 +162,39 @@ static void http_send_request_set_channel_rsp_cb(VMUINT32 req_id,
 	}
 }
 
-static void http_unset_channel_rsp_cb(VMUINT8 channel_id, VMUINT8 result) {
+static void http_unset_channel_rsp_cb(VMUINT8 channel_id,
+		VM_HTTPS_RESULT result) {
 	vm_log_debug("http_unset_channel_rsp_cb()");
+	// eggfly
+	vm_log_debug("!!!SLEEP SECONDS AND REBOOT!!!");
+	vm_thread_sleep(10000);
+    vm_pwr_reboot();
 }
-static void http_send_release_all_req_rsp_cb(VMUINT8 result) {
+static void http_send_release_all_req_rsp_cb(VM_HTTPS_RESULT result) {
 	vm_log_debug("http_send_release_all_req_rsp_cb()");
 }
 static void http_send_termination_ind_cb(void) {
 	vm_log_debug("http_send_termination_ind_cb()");
 }
-static void http_send_read_request_rsp_cb(VMUINT16 request_id, VMUINT8 result,
-		VMUINT16 status, VMINT32 cause, VMUINT8 protocol,
-		VMUINT32 content_length, VMBOOL more, VMUINT8 *content_type,
-		VMUINT8 content_type_len, VMUINT8 *new_url, VMUINT32 new_url_len,
-		VMUINT8 *reply_header, VMUINT32 reply_header_len,
-		VMUINT8 *reply_segment, VMUINT32 reply_segment_len) {
+static void http_send_read_request_rsp_cb(VMUINT16 request_id,
+		VM_HTTPS_RESULT result, VMUINT16 status, VMINT32 cause,
+		VM_HTTPS_PROTOCOL protocol, VMUINT32 content_length, VMBOOL more,
+		VMSTR content_type, VMUINT8 content_type_length, VMSTR new_url,
+		VMUINT32 new_url_length, VMSTR reply_header,
+		VMUINT32 reply_header_length, VMSTR reply_segment,
+		VMUINT32 reply_segment_length) {
 	VMINT ret = -1;
 	vm_log_debug("http_send_request_rsp_cb()");
 	if (result != 0) {
 		vm_https_cancel(request_id);
 		vm_https_unset_channel(g_channel_id);
 	} else {
-		vm_log_debug("reply_content:%s", reply_segment);
-		ret = vm_https_read_content(request_id, ++g_read_seg_num, 100);
+		// vm_log_debug("reply_content:%s", reply_segment);
+		// eggfly
+		fs_open();
+		fs_write(reply_segment, reply_segment_length);
+		// end of eggfly
+		ret = vm_https_read_content(request_id, ++g_read_seg_num, BLOCK_SIZE);
 		if (ret != 0) {
 			vm_https_cancel(request_id);
 			vm_https_unset_channel(g_channel_id);
@@ -148,14 +202,16 @@ static void http_send_read_request_rsp_cb(VMUINT16 request_id, VMUINT8 result,
 	}
 }
 static void http_send_read_read_content_rsp_cb(VMUINT16 request_id,
-		VMUINT8 seq_num, VMUINT8 result, VMBOOL more, VMUINT8 *reply_segment,
-		VMUINT32 reply_segment_len) {
+		VMUINT8 sequence_number, VM_HTTPS_RESULT result, VMBOOL more,
+		VMWSTR reply_segment, VMUINT32 reply_segment_length) {
 	VMINT ret = -1;
-	vm_log_debug("reply_content:%s", reply_segment);
+	// vm_log_debug("reply_content:%s", reply_segment);
+	// eggfly
+	fs_write(reply_segment, reply_segment_length);
 	if (more > 0) {
 		ret = vm_https_read_content(request_id, /* Request ID */
 		++g_read_seg_num, /* Sequence number (for debug purpose) */
-		100); /* The suggested segment data length of replied data in the peer buffer of
+		BLOCK_SIZE); /* The suggested segment data length of replied data in the peer buffer of
 		 response. 0 means use reply_segment_len in MSG_ID_WPS_HTTP_REQ or
 		 read_segment_length in previous request. */
 		if (ret != 0) {
@@ -163,15 +219,17 @@ static void http_send_read_read_content_rsp_cb(VMUINT16 request_id,
 			vm_https_unset_channel(g_channel_id);
 		}
 	} else {
+		// eggfly
+		fs_close();
 		/* don't want to send more requests, so unset channel */
 		vm_https_cancel(request_id);
 		vm_https_unset_channel(g_channel_id);
 		g_channel_id = 0;
 		g_read_seg_num = 0;
-
 	}
 }
-static void http_send_cancel_rsp_cb(VMUINT16 request_id, VMUINT8 result) {
+
+static void http_send_cancel_rsp_cb(VMUINT16 request_id, VM_HTTPS_RESULT result) {
 	vm_log_debug("http_send_cancel_rsp_cb()");
 }
 static void http_send_status_query_rsp_cb(VMUINT8 status) {
