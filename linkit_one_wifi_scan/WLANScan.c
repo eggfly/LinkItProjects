@@ -30,7 +30,8 @@ static void wlan_scan_callback(VMUINT32 job_id, void *user_data,
 	if (VM_WLAN_SCAN_SUCCESS == scan_result->result) {
 		for (i = 0; i < scan_result->ap_list_number; i++) {
 			vm_log_debug("-----------------------------------");
-			vm_log_debug("SSID: || %s", scan_result->ap_list[i].ssid);
+			// eggfly mod
+			vm_log_debug("SSID: || %s", scan_result->ap_list[i].ssid - 4);
 			vm_log_debug("bssid: || %s", scan_result->ap_list[i].bssid);
 			vm_log_debug("rssi: || %d", scan_result->ap_list[i].rssi);
 			vm_log_debug("channel_number: || %d",
