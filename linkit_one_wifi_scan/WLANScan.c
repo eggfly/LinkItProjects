@@ -30,18 +30,18 @@ static void wlan_scan_callback(VMUINT32 job_id, void *user_data,
 	if (VM_WLAN_SCAN_SUCCESS == scan_result->result) {
 		for (i = 0; i < scan_result->ap_list_number; i++) {
 			vm_log_debug("-----------------------------------");
-			vm_log_debug("SSID:%s", scan_result->ap_list[i].ssid);
-			vm_log_debug("bssid: %s", scan_result->ap_list[i].bssid);
-			vm_log_debug("rssi:%d", scan_result->ap_list[i].rssi);
-			vm_log_debug("channel_number:%d",
+			vm_log_debug("SSID: || %s", scan_result->ap_list[i].ssid);
+			vm_log_debug("bssid: || %s", scan_result->ap_list[i].bssid);
+			vm_log_debug("rssi: || %d", scan_result->ap_list[i].rssi);
+			vm_log_debug("channel_number: || %d",
 					scan_result->ap_list[i].channel_number);
-			vm_log_debug("max_rate:%d", scan_result->ap_list[i].max_rate);
-			vm_log_debug("privacy:%d", scan_result->ap_list[i].privacy);
-			vm_log_debug("network_type:%d",
+			vm_log_debug("max_rate: || %d", scan_result->ap_list[i].max_rate);
+			vm_log_debug("privacy: || %d", scan_result->ap_list[i].privacy);
+			vm_log_debug("network_type: || %d",
 					scan_result->ap_list[i].network_type);
-			vm_log_debug("authorize_mode:%d",
+			vm_log_debug("authorize_mode: || %d",
 					scan_result->ap_list[i].authorize_mode);
-			vm_log_debug("encrypt_mode:%d",
+			vm_log_debug("encrypt_mode: || %d",
 					scan_result->ap_list[i].encrypt_mode);
 		}
 	}
