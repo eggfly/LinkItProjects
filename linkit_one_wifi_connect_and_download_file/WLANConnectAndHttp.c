@@ -29,12 +29,15 @@
 /* Configurable macros */
 #define VMHTTPS_TEST_DELAY 10000    /* delay time after initial WLAN */
 
-// #define VMHTTPS_TEST_URL "http://douban.fm/j/mine/playlist?type=n&channel=1&from=mainsite"
+#define VMHTTPS_TEST_URL "http://douban.fm/j/mine/playlist?type=n&channel=1&from=mainsite"
 //#define VMHTTPS_TEST_URL "http://eggfly.qiniudn.com/love.swf"
-#define VMHTTPS_TEST_URL "http://eggfly.qiniudn.com/dong2k.mp3"
+//#define VMHTTPS_TEST_URL "http://eggfly.qiniudn.com/dong2k.mp3"
 
-#define AP_SSID "360wifi-PSSGZF-2.4G"
-#define AP_PASSWORD "homewifi"
+//#define AP_SSID "360wifi-PSSGZF-2.4G"
+//#define AP_PASSWORD "homewifi"
+#define AP_SSID "AndroidAP1"
+#define AP_PASSWORD "adminadmin"
+
 #define AP_AUTHORIZE_MODE   VM_WLAN_AUTHORIZE_MODE_WPA2_ONLY_PSK
 
 #define BLOCK_SIZE 100
@@ -55,7 +58,7 @@ void fs_open() {
 	VMCHAR filename[VM_FS_MAX_PATH_LENGTH] = { 0 };
 	VMWCHAR wfilename[VM_FS_MAX_PATH_LENGTH] = { 0 };
 	VMCHAR letter = vm_fs_get_removable_drive_letter();
-	sprintf(filename, "%c:\\%s", letter, "test_file.bin");
+	sprintf(filename, "%c:\\%s", letter, "test_file.txt");
 	vm_chset_ascii_to_ucs2(wfilename, sizeof(wfilename), filename);
 	/* create file */
 	if ((filehandle = vm_fs_open(wfilename, VM_FS_MODE_CREATE_ALWAYS_WRITE,
@@ -166,9 +169,9 @@ static void http_unset_channel_rsp_cb(VMUINT8 channel_id,
 		VM_HTTPS_RESULT result) {
 	vm_log_debug("http_unset_channel_rsp_cb()");
 	// eggfly
-	vm_log_debug("!!!SLEEP SECONDS AND REBOOT!!!");
-	vm_thread_sleep(10000);
-    vm_pwr_reboot();
+	// vm_log_debug("!!!SLEEP SECONDS AND REBOOT!!!");
+	// vm_thread_sleep(10000);
+    // vm_pwr_reboot();
 }
 static void http_send_release_all_req_rsp_cb(VM_HTTPS_RESULT result) {
 	vm_log_debug("http_send_release_all_req_rsp_cb()");

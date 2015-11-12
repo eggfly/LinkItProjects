@@ -30,14 +30,31 @@
 #define VMHTTPS_TEST_DELAY 10000    /* delay time after initial WLAN */
 #define VMHTTPS_TEST_URL "http://douban.fm/j/mine/playlist?type=n&channel=1&from=mainsite"
 
-#define AP_SSID "360wifi-PSSGZF-2.4G"
-#define AP_PASSWORD "homewifi"
+#define AP_SSID "AndroidAP1"
+#define AP_PASSWORD "adminadmin"
+//#define AP_SSID "360wifi-PSSGZF-2.4G"
+//#define AP_PASSWORD "homewifi"
+
 #define AP_AUTHORIZE_MODE   VM_WLAN_AUTHORIZE_MODE_WPA2_ONLY_PSK
 
 VMUINT8 g_channel_id;
 VMINT g_read_seg_num;
 
-static wlan_connect_callback(void *user_data,
+// json
+#define JSON_MAX_LENGTH (4096)
+
+char json[JSON_MAX_LENGTH] = { };
+int json_pos = 0;
+
+static void append_json(char *buf, int length) {
+	vm_log_info("length: %d", length);
+	if (length >= 0 && json_pos + length <= JSON_MAX_LENGTH) {
+		memcpy(json + json_pos, buf, length);
+		json_pos += length;
+	}
+}
+
+static void wlan_connect_callback(void *user_data,
 		vm_wlan_connect_result_t *connect_result) {
 	if (VM_WLAN_SUCCESS == connect_result->result) {
 		vm_log_info("Connect to AP successfully");
@@ -99,7 +116,7 @@ VMINT32 wlan_init_thread(VM_THREAD_HANDLE thread_handle, void* user_data) {
 }
 
 static void http_send_request_set_channel_rsp_cb(VMUINT32 req_id,
-		VMUINT8 channel_id, VMUINT8 result) {
+		VMUINT8 channel_id, VM_HTTPS_RESULT result) {
 	VMINT ret = -1;
 
 	ret = vm_https_send_request(0, /* Request ID */
@@ -118,27 +135,31 @@ static void http_send_request_set_channel_rsp_cb(VMUINT32 req_id,
 	}
 }
 
-static void http_unset_channel_rsp_cb(VMUINT8 channel_id, VMUINT8 result) {
+static void http_unset_channel_rsp_cb(VMUINT8 channel_id,
+		VM_HTTPS_RESULT result) {
 	vm_log_debug("http_unset_channel_rsp_cb()");
 }
-static void http_send_release_all_req_rsp_cb(VMUINT8 result) {
+static void http_send_release_all_req_rsp_cb(VM_HTTPS_RESULT result) {
 	vm_log_debug("http_send_release_all_req_rsp_cb()");
 }
 static void http_send_termination_ind_cb(void) {
 	vm_log_debug("http_send_termination_ind_cb()");
 }
-static void http_send_read_request_rsp_cb(VMUINT16 request_id, VMUINT8 result,
-		VMUINT16 status, VMINT32 cause, VMUINT8 protocol,
-		VMUINT32 content_length, VMBOOL more, VMUINT8 *content_type,
-		VMUINT8 content_type_len, VMUINT8 *new_url, VMUINT32 new_url_len,
-		VMUINT8 *reply_header, VMUINT32 reply_header_len,
-		VMUINT8 *reply_segment, VMUINT32 reply_segment_len) {
+static void http_send_read_request_rsp_cb(VMUINT16 request_id,
+		VM_HTTPS_RESULT result,
+		VMUINT16 status, VMINT32 cause, VM_HTTPS_PROTOCOL protocol,
+		VMUINT32 content_length, VMBOOL more, VMSTR content_type,
+		VMUINT8 content_type_len, VMSTR new_url, VMUINT32 new_url_len,
+		VMSTR reply_header, VMUINT32 reply_header_len,
+		VMSTR reply_segment, VMUINT32 reply_segment_len) {
 	VMINT ret = -1;
 	vm_log_debug("http_send_request_rsp_cb()");
 	if (result != 0) {
 		vm_https_cancel(request_id);
 		vm_https_unset_channel(g_channel_id);
 	} else {
+		// eggfly
+		append_json(reply_segment, reply_segment_len);
 		vm_log_debug("reply_content:%s", reply_segment);
 		ret = vm_https_read_content(request_id, ++g_read_seg_num, 100);
 		if (ret != 0) {
@@ -148,10 +169,13 @@ static void http_send_read_request_rsp_cb(VMUINT16 request_id, VMUINT8 result,
 	}
 }
 static void http_send_read_read_content_rsp_cb(VMUINT16 request_id,
-		VMUINT8 seq_num, VMUINT8 result, VMBOOL more, VMUINT8 *reply_segment,
+		VMUINT8 seq_num, VM_HTTPS_RESULT result, VMBOOL more,
+		VMWSTR reply_segment,
 		VMUINT32 reply_segment_len) {
 	VMINT ret = -1;
 	vm_log_debug("reply_content:%s", reply_segment);
+	// eggfly
+	append_json(reply_segment, reply_segment_len);
 	if (more > 0) {
 		ret = vm_https_read_content(request_id, /* Request ID */
 		++g_read_seg_num, /* Sequence number (for debug purpose) */
@@ -163,15 +187,18 @@ static void http_send_read_read_content_rsp_cb(VMUINT16 request_id,
 			vm_https_unset_channel(g_channel_id);
 		}
 	} else {
+		// eggfly
+		vm_log_debug("strlen(): %d", strlen(json));
+		char link[1024];
+		parse_json(json, link);
 		/* don't want to send more requests, so unset channel */
 		vm_https_cancel(request_id);
 		vm_https_unset_channel(g_channel_id);
 		g_channel_id = 0;
 		g_read_seg_num = 0;
-
 	}
 }
-static void http_send_cancel_rsp_cb(VMUINT16 request_id, VMUINT8 result) {
+static void http_send_cancel_rsp_cb(VMUINT16 request_id, VM_HTTPS_RESULT result) {
 	vm_log_debug("http_send_cancel_rsp_cb()");
 }
 static void http_send_status_query_rsp_cb(VMUINT8 status) {
@@ -184,10 +211,14 @@ static void http_send_request(VM_TIMER_ID_NON_PRECISE timer_id, void* user_data)
 	/*----------------------------------------------------------------*/
 	VMINT ret = -1;
 	VMINT apn = VM_BEARER_DATA_ACCOUNT_TYPE_WLAN;
-	vm_https_callbacks_t callbacks = { http_send_request_set_channel_rsp_cb,
-			http_unset_channel_rsp_cb, http_send_release_all_req_rsp_cb,
-			http_send_termination_ind_cb, http_send_read_request_rsp_cb,
-			http_send_read_read_content_rsp_cb, http_send_cancel_rsp_cb,
+	vm_https_callbacks_t callbacks = {
+			http_send_request_set_channel_rsp_cb,
+			http_unset_channel_rsp_cb,
+			http_send_release_all_req_rsp_cb,
+			http_send_termination_ind_cb,
+			http_send_read_request_rsp_cb,
+			http_send_read_read_content_rsp_cb,
+			http_send_cancel_rsp_cb,
 			http_send_status_query_rsp_cb };
 	/*----------------------------------------------------------------*/
 	/* Code Body                                                      */

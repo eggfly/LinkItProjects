@@ -1,7 +1,7 @@
 #ifndef _DOUBAN_H_
 #define	_DOUBAN_H_
 
-int test();
+void parse_json(char *json, char *link);
 
 #endif
 
