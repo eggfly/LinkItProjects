@@ -34,7 +34,7 @@
 #include "vmaudio_play.h"
 
 #define COMMAND_PORT 1000 /* AT command port */
-#define MAX_NAME_LEN 260  /* Max length of file name */
+#define MAX_NAME_LEN VM_FS_MAX_PATH_LENGTH  /* Max length of file name */
 
 static VMINT g_handle = -1; /* The handle of play */
 static VMINT g_interrupt_handle = 0; /* The handle of interrupt */
@@ -63,54 +63,80 @@ void audio_play_callback(VM_AUDIO_HANDLE handle, VM_AUDIO_RESULT result,
 	}
 }
 
-/* Play the audio file. */
-void audio_play() {
-	// eggfly battery
-	VMINT battery_level = 0;
-	battery_level = vm_pwr_get_battery_level();
-	vm_log_info("[Battery GATT] battery_level:%d", battery_level);
+VM_FS_HANDLE handle = -1;
+VMWCHAR w_drive_path[MAX_NAME_LEN] = { };
 
-	VMINT drv;
-	VMWCHAR w_file_name[MAX_NAME_LEN] = { 0 };
-	VMCHAR file_name[MAX_NAME_LEN];
-	vm_audio_play_parameters_t play_parameters;
-	VM_AUDIO_VOLUME volume;
+void search_next_mp3(vm_fs_info_ex_t *file_info) {
+	if (handle == -1) {
+		// initialize file search
+		VMINT drv;
 
-	/* get file path */
-	drv = vm_fs_get_removable_drive_letter();
-	if (drv < 0) {
-		vm_log_fatal("not find removable");
-
-		drv = vm_fs_get_internal_drive_letter();
+		/* get file path */
+		drv = vm_fs_get_removable_drive_letter();
 		if (drv < 0) {
-			vm_log_fatal("not find driver");
-			return;
+			vm_log_fatal("not find removable");
+
+			drv = vm_fs_get_internal_drive_letter();
+			if (drv < 0) {
+				vm_log_fatal("not find driver");
+				return;
+			}
+		}
+		// save the wide driver path
+		VMCHAR drive_path[MAX_NAME_LEN] = { };
+		sprintf(drive_path, "%c:\\", drv);
+		vm_chset_ascii_to_ucs2(w_drive_path, MAX_NAME_LEN, drive_path);
+
+		// eggfly
+		VMWCHAR w_search_path[MAX_NAME_LEN] = { 0 };
+		VMCHAR search_path[MAX_NAME_LEN];
+		sprintf(search_path, "%c:\\*.mp3", drv);
+		vm_chset_ascii_to_ucs2(w_search_path, MAX_NAME_LEN, search_path);
+
+		handle = vm_fs_find_first_ex(w_search_path, file_info);
+		if (handle < 0) {
+			// no files not found in storage
+			vm_log_debug("no files not found in storage.");
+		}
+	} else {
+		// file search handle already initialized, then find the next file
+		VM_RESULT ret = vm_fs_find_next_ex(handle, file_info);
+		if (ret != 0) {
+			vm_log_debug("END");
+			vm_fs_find_close_ex(handle);
+			// mark handle released
+			handle = -1;
 		}
 	}
-	char * path = NULL;
-	switch (battery_level) {
-	case 0:
-		path = "%c:\\1769863605_1760787_l.mp3";
-		break;
-	case 25:
-		path = "%c:\\1769863607_1760789_l.mp3";
-		break;
-	case 50:
-		path = "%c:\\1769863610_1760792_l.mp3";
-		break;
-	case 75:
-		path = "%c:\\1769863612_1760794_l.mp3";
-		break;
-	case 100:
-		path = "%c:\\audio2.mp3";
-		break;
+}
+/* Play the audio file. */
+void audio_play() {
+	vm_fs_info_ex_t file_info;
+
+	// initialize search or find next
+	search_next_mp3(&file_info);
+
+	if (handle < 0) {
+		vm_log_debug("file handle < 0, return.");
+		return;
 	}
-	sprintf(file_name, (VMSTR) path, drv);
-	vm_chset_ascii_to_ucs2(w_file_name, MAX_NAME_LEN, file_name);
+
+	// get the full file path
+	VMWCHAR w_full_path[MAX_NAME_LEN] = { 0 };
+	vm_wstr_concatenate(w_full_path, w_drive_path);
+	vm_wstr_concatenate(w_full_path, file_info.full_filename);
+
+	// for debug
+	VMCHAR full_file_path[MAX_NAME_LEN] = { 0 };
+	vm_chset_ucs2_to_ascii(full_file_path, MAX_NAME_LEN, w_full_path);
+	vm_log_debug("handle: %d, path: %s", handle, full_file_path);
+	// for debug end
 
 	/* set play parameters */
+	vm_audio_play_parameters_t play_parameters;
+
 	memset(&play_parameters, 0, sizeof(vm_audio_play_parameters_t));
-	play_parameters.filename = w_file_name;
+	play_parameters.filename = w_full_path;
 	play_parameters.reserved = 0; /* no use, set to 0 */
 	play_parameters.format = VM_AUDIO_FORMAT_MP3; /* file format */
 	play_parameters.output_path = VM_AUDIO_DEVICE_SPEAKER2; /* set device to output */
@@ -134,10 +160,14 @@ void audio_play() {
 
 /* AT command callback, which will be invoked when you send an AT command from the monitor tool */
 void at_callback(vm_cmd_command_t *param, void *user_data) {
-	VMBOOL is_play;
-
 	if (strcmp("Test01", (char*) param->command_buffer) == 0) {
 		/* start playing when the following command is received: AT+[1000]Test01 */
+		// eggfly
+		if (g_handle != -1) {
+			vm_audio_play_stop(g_handle);
+			vm_audio_play_close(g_handle);
+			g_handle = -1;
+		}
 		audio_play();
 	} else if (strcmp("Test02", (char*) param->command_buffer) == 0) {
 		/* pause when the following command is received: AT+[1000]Test02 */
@@ -158,7 +188,6 @@ void at_callback(vm_cmd_command_t *param, void *user_data) {
 				vm_audio_clear_interrupt_callback(g_interrupt_handle);
 			}
 		}
-
 	}
 }
 
