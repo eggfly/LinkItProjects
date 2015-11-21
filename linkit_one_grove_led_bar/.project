@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>linkit_one_blink</name>
+	<name>linkit_one_grove_led_bar</name>
 	<comment></comment>
 	<projects>
 	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
 </projectDescription>

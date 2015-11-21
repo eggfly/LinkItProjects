@@ -116,8 +116,7 @@ static void destroy_clock(void) {
 		vm_free(g_frame_group[0]->buffer);
 		g_frame_group[0]->buffer = NULL;
 	}
-	if (NULL != font_pool)
-			{
+	if (NULL != font_pool) {
 		vm_free(font_pool);
 		font_pool = NULL;
 	}

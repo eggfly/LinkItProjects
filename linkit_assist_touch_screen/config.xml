@@ -3,7 +3,7 @@
 <packageinfo>
   <userinfo>
     <developer>MediaTek Inc</developer>
-    <appname>linkit_one_blink</appname>
+    <appname>linkit_assist_touch_screen</appname>
     <appversion>2.0.0</appversion>
     <appid>-1</appid>
     <iconName>
@@ -58,9 +58,9 @@
     <idleshortcut>unchecked</idleshortcut>
   </targetconfig>
   <namelist>
-    <english>Demo</english>
-    <chinese>Demo</chinese>
-    <cht>Demo</cht>
+    <english>touch</english>
+    <chinese>touch</chinese>
+    <cht>touch</cht>
   </namelist>
   <operationinfo>
     <content>content</content>
@@ -72,7 +72,7 @@
   </paymentlib>
   <output>
     <type>0</type>
-    <device>0</device>
+    <device>2</device>
   </output>
   <resolution>
     <Width>128</Width>

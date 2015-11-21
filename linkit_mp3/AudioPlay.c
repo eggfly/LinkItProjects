@@ -139,7 +139,7 @@ void audio_play() {
 	play_parameters.filename = w_full_path;
 	play_parameters.reserved = 0; /* no use, set to 0 */
 	play_parameters.format = VM_AUDIO_FORMAT_MP3; /* file format */
-	play_parameters.output_path = VM_AUDIO_DEVICE_SPEAKER2; /* set device to output */
+	play_parameters.output_path = VM_AUDIO_DEVICE_SPEAKER_BOTH; /* set device to output */
 	play_parameters.async_mode = 0;
 	play_parameters.callback = audio_play_callback;
 	play_parameters.user_data = NULL;
@@ -152,7 +152,7 @@ void audio_play() {
 	/* start to play */
 	vm_audio_play_start(g_handle);
 	/* set volume */
-	vm_audio_set_volume(VM_AUDIO_VOLUME_2);
+	vm_audio_set_volume(VM_AUDIO_VOLUME_4);
 	/* register interrupt callback */
 	g_interrupt_handle = vm_audio_register_interrupt_callback(
 			audio_play_callback, NULL);
