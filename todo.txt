@@ -9,6 +9,7 @@ problems:
 play midi
 external storage filesystem
 play mp3 stream
+load font
 
 questions:
 为什么assist 2502上blink的例子用VM_PIN_P0，但是手册上写的LED不是P0，是P8,P9，手册写错了？

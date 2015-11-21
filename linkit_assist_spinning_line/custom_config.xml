@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+	<packageinfo>
+		<userinfo>
+			<developer>MediaTek Inc</developer>
+			<appname>SpinningLine</appname>
+			<appversion>2.0.0</appversion>
+			<appid>-1</appid>
+		</userinfo>
+		<targetconfig>
+			<mem>500</mem>
+		</targetconfig>
+		<options>
+			<compile>-mthumb-interwork -c -g -fpic -mcpu=arm7tdmi-s -fvisibility=hidden -mthumb -mlittle-endian -O2 -D__COMPILER_GCC__ -fno-exceptions -fno-non-call-exceptions </compile>
+			<link>-Wl,--gc-sections -fpic -pie -lm --specs=nosys.specs</link>
+		</options>
+	</packageinfo>
