@@ -1,0 +1,4 @@
+<APP id="APP_touch">
+    <RESOLUTION width="128" height="160" class="image" />
+    <STRING>.\res\ref_list_touch.txt</STRING>
+</APP>

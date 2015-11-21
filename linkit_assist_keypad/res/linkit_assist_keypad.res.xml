@@ -1,0 +1,4 @@
+<APP id="APP_keypad">
+    <RESOLUTION width="128" height="160" class="image" />
+    <STRING>.\res\ref_list_keypad.txt</STRING>
+</APP>

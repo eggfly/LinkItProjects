@@ -64,8 +64,7 @@ static void timer_callback(VM_TIMER_ID_PRECISE tid) {
 	SCREEN_HEIGHT);
 
 	result = vm_time_get_date_time(&date_time);
-	if (VM_IS_SUCCEEDED(result))
-			{
+	if (VM_IS_SUCCEEDED(result)) {
 		sprintf(str, "%02d:%02d:%02d", date_time.hour, date_time.minute,
 				date_time.second);
 		vm_chset_ascii_to_ucs2(g_wide_string, STRING_LENGTH * 2, str);
@@ -84,8 +83,7 @@ static void draw_clock(void) {
 
 	frame.buffer_length = SCREEN_WIDTH * SCREEN_HEIGHT * 2;
 	frame.buffer = vm_malloc_dma(frame.buffer_length);
-	if (frame.buffer == NULL)
-	{
+	if (frame.buffer == NULL) {
 		return;
 	}
 
@@ -93,11 +91,9 @@ static void draw_clock(void) {
 	frame.height = frame.width = SCREEN_WIDTH;
 	g_frame_group[0] = &frame;
 	result = vm_graphic_get_font_pool_size(0, 0, 0, &pool_size);
-	if (VM_IS_SUCCEEDED(result))
-			{
+	if (VM_IS_SUCCEEDED(result)) {
 		font_pool = vm_malloc(pool_size);
-		if (NULL != font_pool)
-				{
+		if (NULL != font_pool) {
 			vm_graphic_init_font_pool(font_pool, pool_size);
 		}
 	}
@@ -111,8 +107,7 @@ static void draw_clock(void) {
 }
 
 static void destroy_clock(void) {
-	if (NULL != g_frame_group[0]->buffer)
-			{
+	if (NULL != g_frame_group[0]->buffer) {
 		vm_free(g_frame_group[0]->buffer);
 		g_frame_group[0]->buffer = NULL;
 	}

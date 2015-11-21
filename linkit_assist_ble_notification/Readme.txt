@@ -1,0 +1,7 @@
+﻿This example demonstrates how to configure the BT service for notifications, how to receive the notifications from a smart phone and how to analyse the notification content.
+
+This example starts with a 5 second timer first. Then it tries to start the BT service (vm_bt_cm_switch_on()), set the BT name (vm_bt_cm_set_host_name()), set the BT visibility (vm_bt_cm_set_visibility()), register the notification event callback (vm_bt_ns_register_notification_callback()) and the BT status change callback (vm_bt_ns_register_connection_status_change_callback()).
+
+If LinkIt Assist 2502 is connected with a smart phone and the the smart phone has the notification, such as new SMS message or a missed call, the LinkIt Assist 2502 will receive the notification in the callback.
+
+To use this example, modify macro the BT_NAME to change the device name to something you like, upload the example and pair the device with an iOS or Android smart phone. For an iOS smart phone, download the "Mediatek SmartDevice" from the App store. For an Android smart phone, install the supplied APK file in SDK’s custom folder. If the smart phone has notification such as new SMS message or missed call, the device will receive the notification in the callback function.
