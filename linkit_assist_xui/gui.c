@@ -45,8 +45,8 @@
 #define BACKLIGHT_PIN VM_PIN_P1
 
 /* Drawing resources */
-vm_graphic_frame_t g_frame[2]; /* [0] for background image, [1] for the rotated line image */
-vm_graphic_frame_t* g_frame_group[2]; /* For frame blt */
+vm_graphic_frame_t g_frame[1]; /* [0] for background image, [1] for the rotated line image */
+vm_graphic_frame_t* g_frame_group[1]; /* For frame blt */
 
 /* Animation timer */
 VM_TIMER_ID_PRECISE g_timer_id;
@@ -54,24 +54,24 @@ VM_TIMER_ID_PRECISE g_timer_id;
 /* Update the rotating line, then update the display */
 static void timer_callback(VM_TIMER_ID_PRECISE tid, void* user_data) {
 	vm_graphic_point_t positions[2] = { 0, };
-	vm_graphic_color_argb_t color;
-
-	/* clear the background with blue color key */
-	color.a = 255;
-	color.r = 0;
-	color.g = 0;
-	color.b = 255;
-	vm_graphic_set_color(color);
-	vm_graphic_draw_solid_rectangle(g_frame_group[1], 0, 0, SCREEN_WIDTH,
-	SCREEN_HEIGHT);
-
-	color.g = 255;
-	vm_graphic_set_color(color);
-	vm_graphic_draw_line(g_frame_group[1], SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-	SCREEN_WIDTH / 2 + LINE_LENGTH - 1, SCREEN_HEIGHT / 2);
+//	vm_graphic_color_argb_t color;
+//
+//	/* clear the background with blue color key */
+//	color.a = 255;
+//	color.r = 0;
+//	color.g = 0;
+//	color.b = 255;
+//	vm_graphic_set_color(color);
+//	vm_graphic_draw_solid_rectangle(g_frame_group[1], 0, 0, SCREEN_WIDTH,
+//	SCREEN_HEIGHT);
+//
+//	color.g = 255;
+//	vm_graphic_set_color(color);
+//	vm_graphic_draw_line(g_frame_group[1], SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+//	SCREEN_WIDTH / 2 + LINE_LENGTH - 1, SCREEN_HEIGHT / 2);
 
 	/* composite the rotated line image to background buffer and display it */
-	vm_graphic_blt_frame(g_frame_group, positions, 2);
+	vm_graphic_blt_frame(g_frame_group, positions, 1);
 }
 
 /* Prepares the first frame of animation */
@@ -131,13 +131,13 @@ VMBOOL allocate_drawing_resource(void) {
 			break;
 		}
 
-		if (!allocate_frame(&g_frame[1])) {
-			break;
-		}
+//		if (!allocate_frame(&g_frame[1])) {
+//			break;
+//		}
 
 		/* Setup frame group for composite and display */
 		g_frame_group[0] = &g_frame[0];
-		g_frame_group[1] = &g_frame[1];
+//		g_frame_group[1] = &g_frame[1];
 
 		return VM_TRUE;
 	} while (0);
@@ -158,9 +158,9 @@ void free_frame(vm_graphic_frame_t *frame) {
 /* Release all memory allocated for graphics frame */
 void free_drawing_resource(void) {
 	free_frame(&g_frame[0]);
-	free_frame(&g_frame[1]);
+//	free_frame(&g_frame[1]);
 	g_frame_group[0] = NULL;
-	g_frame_group[1] = NULL;
+//	g_frame_group[1] = NULL;
 	vm_timer_delete_precise(g_timer_id);
 }
 
@@ -171,6 +171,11 @@ void handle_system_event(VMINT message, VMINT param) {
 		/* Init resource for background image */
 		vm_res_init(0);
 		allocate_drawing_resource();
+		// eggfly
+		xui_page page = { };
+		xui_text_view text_view;
+		xui_init_text_view(&text_view);
+		xui_init_page(&page, NULL, 0);
 		break;
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */
@@ -211,7 +216,4 @@ void vm_main(void) {
 	/* register system events handler */
 	vm_pmng_register_system_event_callback(handle_system_event);
 
-	// eggfly
-	xui_text_view text_view;
-	xui_init_text_view(&text_view);
 }
