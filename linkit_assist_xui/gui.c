@@ -164,6 +164,10 @@ void free_drawing_resource(void) {
 	vm_timer_delete_precise(g_timer_id);
 }
 
+// eggfly
+xui_page page = { };
+xui_text_view text_view = { };
+
 /* The callback to be invoked by the system engine. */
 void handle_system_event(VMINT message, VMINT param) {
 	switch (message) {
@@ -172,8 +176,6 @@ void handle_system_event(VMINT message, VMINT param) {
 		vm_res_init(0);
 		allocate_drawing_resource();
 		// eggfly
-		xui_page page = { };
-		xui_text_view text_view;
 		xui_init_text_view(&text_view);
 		xui_init_page(&page, NULL, 0);
 		break;
