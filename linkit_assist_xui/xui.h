@@ -32,6 +32,8 @@ struct _xui_view {
 typedef struct {
 	xui_view view;
 	VMCHAR text[MAX_CHAR]; // TODO
+	VMINT text_size;
+	vm_graphic_color_argb_t text_color;
 } xui_text_view;
 
 void xui_init_text_view(xui_text_view * text_view);

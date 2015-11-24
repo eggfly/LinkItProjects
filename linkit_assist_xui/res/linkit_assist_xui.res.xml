@@ -1,0 +1,4 @@
+<APP id="APP_SpinningLine">
+    <IMAGE id="IMG_ID_BG" type="Normal">.\res\N04.png</IMAGE>
+    <STRING>.\res\ref_list_SpinningLine.txt</STRING>
+</APP>
