@@ -24,6 +24,8 @@
 
 #include "vmtype.h"
 #include "vmsystem.h"
+#include "vmres.h"
+#include "vmmemory.h"
 #include "vmlog.h"
 #include "vmgraphic.h"
 #include "ResID.h"
@@ -35,115 +37,20 @@
 #include "vmdcl_pwm.h"
 #include "xui.h"
 
-/* Sample parameters */
-#define SCREEN_WIDTH 240		/* Set to your display size */
-#define SCREEN_HEIGHT 240		/* Set to your display size */
-#define LINE_LENGTH 100			/* Length of the spinning line */
-#define PI 3.14
-#define FREQUENCY 180
-
 #define BACKLIGHT_PIN VM_PIN_P1
-
-/* Drawing resources */
-vm_graphic_frame_t g_frame[1]; /* [0] for background image, [1] for the rotated line image */
-vm_graphic_frame_t* g_frame_group[1]; /* For frame blt */
 
 /* Animation timer */
 VM_TIMER_ID_PRECISE g_timer_id;
 
+// eggfly
+xui_page page;
+xui_text_view text_view;
+void * views[] = { &text_view };
+
 /* Update the rotating line, then update the display */
 static void timer_callback(VM_TIMER_ID_PRECISE tid, void* user_data) {
-	vm_graphic_point_t positions[2] = { 0, };
-//	vm_graphic_color_argb_t color;
-//
-//	/* clear the background with blue color key */
-//	color.a = 255;
-//	color.r = 0;
-//	color.g = 0;
-//	color.b = 255;
-//	vm_graphic_set_color(color);
-//	vm_graphic_draw_solid_rectangle(g_frame_group[1], 0, 0, SCREEN_WIDTH,
-//	SCREEN_HEIGHT);
-//
-//	color.g = 255;
-//	vm_graphic_set_color(color);
-//	vm_graphic_draw_line(g_frame_group[1], SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-//	SCREEN_WIDTH / 2 + LINE_LENGTH - 1, SCREEN_HEIGHT / 2);
-
-	/* composite the rotated line image to background buffer and display it */
-	vm_graphic_blt_frame(g_frame_group, positions, 1);
-}
-
-/* Prepares the first frame of animation */
-static void draw_first_frame(void) {
-	VMUINT8* img_data;
-	VMUINT32 img_size;
-	vm_graphic_color_argb_t color;
-
-	/* draw background image */
-	img_data = vm_res_get_image(IMG_ID_BG, &img_size);
-	vm_graphic_draw_image_memory(g_frame_group[0], 0, 0, img_data, img_size, 0);
-
-	/* draw a purple horizontal blue line from center of screen */
-	color.a = 255;
-	color.r = 0;
-	color.g = 0;
-	color.b = 255;
-	vm_graphic_set_color(color);
-	vm_graphic_draw_solid_rectangle(g_frame_group[1], 0, 0, SCREEN_WIDTH,
-	SCREEN_HEIGHT);
-	color.r = 255;
-	vm_graphic_set_color(color);
-	vm_graphic_draw_line(g_frame_group[1], SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-	SCREEN_WIDTH / 2 + LINE_LENGTH - 1, SCREEN_HEIGHT / 2);
-
-	/* create animation timer */
-	g_timer_id = vm_timer_create_precise(100, timer_callback, NULL);
-
-	/* explicitly trigger 1st frame */
-	timer_callback(g_timer_id, NULL);
-}
-
-/* Allocate memory for a single frame */
-VMBOOL allocate_frame(vm_graphic_frame_t *frame) {
-	if (frame == NULL) {
-		return VM_FALSE;
-	}
-
-	/* We use 16-bit color, 2 bytes per pixel */
-	frame->color_format = VM_GRAPHIC_COLOR_FORMAT_16_BIT;
-	frame->width = SCREEN_WIDTH;
-	frame->height = SCREEN_HEIGHT;
-	frame->buffer_length = SCREEN_WIDTH * SCREEN_HEIGHT * 2;
-	frame->buffer = vm_malloc_dma(frame->buffer_length);
-	if (frame->buffer == NULL) {
-		return VM_FALSE;
-	}
-
-	return VM_TRUE;
-}
-
-/* Allocate memory for all the frames we need */
-VMBOOL allocate_drawing_resource(void) {
-	do {
-		/* Allocate buffers for each frame */
-		if (!allocate_frame(&g_frame[0])) {
-			break;
-		}
-
-//		if (!allocate_frame(&g_frame[1])) {
-//			break;
-//		}
-
-		/* Setup frame group for composite and display */
-		g_frame_group[0] = &g_frame[0];
-//		g_frame_group[1] = &g_frame[1];
-
-		return VM_TRUE;
-	} while (0);
-
-	/* Failed to allocate all buffers, free */
-	return VM_FALSE;
+	vm_log_debug("timer_callback");
+	xui_validate(page);
 }
 
 /* Free one frame */
@@ -157,36 +64,32 @@ void free_frame(vm_graphic_frame_t *frame) {
 
 /* Release all memory allocated for graphics frame */
 void free_drawing_resource(void) {
-	free_frame(&g_frame[0]);
+	//free_frame(&g_frame[0]);
 //	free_frame(&g_frame[1]);
-	g_frame_group[0] = NULL;
+	//g_frame_group[0] = NULL;
 //	g_frame_group[1] = NULL;
 	vm_timer_delete_precise(g_timer_id);
 }
-
-// eggfly
-xui_page page = { };
-xui_text_view text_view = { };
 
 /* The callback to be invoked by the system engine. */
 void handle_system_event(VMINT message, VMINT param) {
 	switch (message) {
 	case VM_EVENT_CREATE:
-		/* Init resource for background image */
-		vm_res_init(0);
-		allocate_drawing_resource();
 		// eggfly
-		xui_init_text_view(&text_view);
-		xui_init_page(&page, NULL, 0);
+		xui_init();
+		text_view = xui_init_text_view();
+		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
 		break;
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */
-		draw_first_frame();
+		vm_thread_sleep(10 * 1000);
+		g_timer_id = vm_timer_create_precise(100, timer_callback, NULL);
+		timer_callback(g_timer_id, NULL);
 		break;
 	case VM_EVENT_QUIT:
-		free_drawing_resource();
+		//free_drawing_resource();
 		/* Deinit APP resource */
-		vm_res_release();
+		//vm_res_release();
 		break;
 	}
 }
@@ -217,5 +120,4 @@ void vm_main(void) {
 	lcd_backlight_level(60);
 	/* register system events handler */
 	vm_pmng_register_system_event_callback(handle_system_event);
-
 }
