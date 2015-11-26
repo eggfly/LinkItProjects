@@ -8,6 +8,7 @@
  * vm_https_read_content().
  */
 #include <string.h>
+#include <stdio.h>
 #include "vmtype.h" 
 #include "vmboard.h"
 #include "vmsystem.h"
@@ -168,7 +169,7 @@ static void http_unset_channel_rsp_cb(VMUINT8 channel_id,
 	// eggfly
 	vm_log_debug("!!!SLEEP SECONDS AND REBOOT!!!");
 	vm_thread_sleep(10000);
-    vm_pwr_reboot();
+	vm_pwr_reboot();
 }
 static void http_send_release_all_req_rsp_cb(VM_HTTPS_RESULT result) {
 	vm_log_debug("http_send_release_all_req_rsp_cb()");
