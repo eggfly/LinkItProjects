@@ -24,8 +24,8 @@ struct _xui_view {
 };
 
 struct _xui_text_view {
+	XUI_VIEW_MEMBERS // must be the first
 	VMWSTR text;
 	VMINT text_size;
 	vm_graphic_color_argb_t text_color;
-	XUI_VIEW_MEMBERS // must be the first
 };

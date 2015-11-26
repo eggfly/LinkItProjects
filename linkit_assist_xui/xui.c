@@ -1,6 +1,8 @@
 #include "xui_private.h"
 #include "vmmemory.h"
 #include "vmgraphic.h"
+#include "vmchset.h"
+#include "vmgraphic_font.h"
 #include "vmlog.h"
 
 /* Use one frame temporary */
@@ -41,18 +43,9 @@ static void _init_view(void * view, _render_func func) {
 	p->visibility = 1;
 }
 
-VMWCHAR g_wstr[260];
+VMWCHAR g_wstr[260]; // TODO: temp
 
-void _render_text_view(struct _xui_view * view) {
-	vm_log_debug("_render_text_view");
-	struct _xui_text_view * text_view = (struct _xui_text_view*) view;
-	vm_graphic_set_color(text_view->text_color);
-	vm_graphic_set_font_size(text_view->text_size);
-	char * str = "text";
-	vm_chset_ascii_to_ucs2(g_wstr, 260, str);
-	text_view->text = g_wstr;
-	vm_graphic_draw_text(&g_frame, text_view->x, text_view->y, text_view->text);
-}
+static void _render_text_view(struct _xui_view *);
 
 xui_text_view xui_init_text_view() {
 	vm_log_debug("xui_init_text_view");
@@ -60,11 +53,11 @@ xui_text_view xui_init_text_view() {
 	result.view = vm_malloc(sizeof(struct _xui_text_view));
 	_init_view(result.view, _render_text_view);
 	struct _xui_text_view * p_view = (struct _xui_text_view *) result.view;
-	vm_log_debug("struct _xui_text_view * : %d", p_view);
 	p_view->text_size = 10; // TODO
 	vm_graphic_color_argb_t * color = &p_view->text_color;
 	color->a = 255;
 	color->r = color->g = color->b = 0;
+	return result;
 }
 
 void xui_validate(xui_page page) {
@@ -83,16 +76,19 @@ void xui_validate(xui_page page) {
 		xui_view * p_view = (xui_view*) view;
 		vm_log_debug("_xui_page->views[0] * : %d", p_view); // right
 		void * p_internal_view = p_view->view;
-		struct _xui_text_view * this = (struct _xui_text_view *) p_internal_view;
+		struct _xui_view * this = (struct _xui_view *) p_internal_view;
 		vm_log_debug("_xui_text_view *: %d", this); // right
+		vm_log_debug("_xui_text_view->width: %d", this->width);
+		vm_log_debug("_xui_text_view->height: %d", this->height);
+		vm_log_debug("_xui_text_view->visibility: %d", this->visibility);
 		vm_log_debug("_xui_text_view->render pointer: %d", this->render);
-		//this->render(this);
+		this->render(this);
 		vm_log_debug("7");
 	}
 	vm_log_debug("8");
 	vm_graphic_point_t positions[FRAME_COUNT] = { };
 	/* composite and display */
-	//vm_graphic_blt_frame(g_frame_group, positions, FRAME_COUNT);
+	vm_graphic_blt_frame(g_frame_group, positions, FRAME_COUNT);
 }
 
 xui_page xui_init_page(void ** views, VMINT view_count) {
@@ -103,4 +99,15 @@ xui_page xui_init_page(void ** views, VMINT view_count) {
 	page->views = views;
 	page->view_count = view_count;
 	return result;
+}
+
+static void _render_text_view(struct _xui_view * view) {
+	vm_log_debug("_render_text_view");
+	struct _xui_text_view * text_view = (struct _xui_text_view*) view;
+	vm_graphic_set_color(text_view->text_color);
+	vm_graphic_set_font_size(text_view->text_size);
+	VMCHAR * str = (VMCHAR *) "text";
+	vm_chset_ascii_to_ucs2(g_wstr, 260, str);
+	text_view->text = g_wstr;
+	vm_graphic_draw_text(g_frame, text_view->x, text_view->y, text_view->text);
 }

@@ -9,8 +9,12 @@
 		<targetconfig>
 			<mem>500</mem>
 		</targetconfig>
+		<output>
+			<device>2</device>
+		</output>
 		<options>
-			<compile>-mthumb-interwork -c -g -fpic -mcpu=arm7tdmi-s -fvisibility=hidden -mthumb -mlittle-endian -O2 -D__COMPILER_GCC__ -fno-exceptions -fno-non-call-exceptions </compile>
+			<compile>-mthumb-interwork -c -g -fpic -mcpu=arm7tdmi-s -fvisibility=hidden -mthumb -mlittle-endian -O2 -D__COMPILER_GCC__ -fno-exceptions -fno-non-call-exceptions -Wall</compile>
+			<cppcompile>-fno-rtti -mthumb-interwork -c -gdwarf-2 -gstrict-dwarf -fpic -mcpu=arm7tdmi-s -fvisibility=hidden -mthumb -mlittle-endian -O2 -D__COMPILER_GCC__ -fno-exceptions -fno-non-call-exceptions </cppcompile>
 			<link>-Wl,--gc-sections -fpic -pie -lm --specs=nosys.specs</link>
 		</options>
 	</packageinfo>

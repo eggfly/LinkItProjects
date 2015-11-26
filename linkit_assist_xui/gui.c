@@ -28,8 +28,10 @@
 #include "vmmemory.h"
 #include "vmlog.h"
 #include "vmgraphic.h"
+#include "vmgraphic_font.h"
 #include "ResID.h"
 #include "vmtimer.h"
+#include "vmthread.h"
 #include <math.h>
 #include "lcd_sitronix_st7789s.h"
 #include "vmdcl.h"
@@ -51,6 +53,7 @@ void * views[] = { &text_view };
 static void timer_callback(VM_TIMER_ID_PRECISE tid, void* user_data) {
 	vm_log_debug("timer_callback");
 	xui_validate(page);
+	// TODO remove
 	while (1) {
 		vm_thread_sleep(10000);
 	}
@@ -74,6 +77,35 @@ void free_drawing_resource(void) {
 	vm_timer_delete_precise(g_timer_id);
 }
 
+// for debug
+
+struct _xui_view;
+
+typedef void (*_render_func)(struct _xui_view * view);
+
+#define XUI_VIEW_MEMBERS \
+	VMINT x, y;\
+	VMINT width, height;\
+	VMCHAR visibility;\
+	_render_func render;
+
+struct _xui_view {
+	XUI_VIEW_MEMBERS
+};
+
+struct _xui_text_view {
+	XUI_VIEW_MEMBERS // must be the first
+	VMWSTR text;
+	VMINT text_size;
+	vm_graphic_color_argb_t text_color;
+};
+
+static void debug(void * view) {
+	struct _xui_text_view * inner = (struct _xui_text_view *) view;
+	vm_log_debug("inner->width,height: %d %d", inner->width, inner->height);
+}
+// debug end
+
 /* The callback to be invoked by the system engine. */
 void handle_system_event(VMINT message, VMINT param) {
 	switch (message) {
@@ -83,9 +115,11 @@ void handle_system_event(VMINT message, VMINT param) {
 		text_view = xui_init_text_view();
 		vm_log_debug("xui_text_view *: %d", &text_view);
 		vm_log_debug("xui_text_view.view : %d", text_view.view);
+		debug(text_view.view);
 		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
 		vm_log_debug("xui_page *: %d", &page);
 		vm_log_debug("xui_page.page : %d", page.page);
+		debug(text_view.view);
 		break;
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */
