@@ -70,30 +70,29 @@ xui_text_view xui_init_text_view() {
 void xui_validate(xui_page page) {
 	vm_log_debug("xui_validate");
 	struct _xui_page * p_page = (struct _xui_page *) page.page;
+	vm_log_debug("xui_page.page : %d", page.page);
+	vm_log_debug("xui_page.page : %d", p_page);
 	int i;
 	void ** views = p_page->views;
 	int view_count = p_page->view_count;
+	vm_log_debug("_xui_page->views ** : %d", views);
 	vm_log_debug("view_count: %d", view_count);
 	vm_log_debug("1");
 	for (i = 0; i < view_count; i++) {
-		vm_log_debug("2");
 		void * view = views[i];
-		vm_log_debug("3");
 		xui_view * p_view = (xui_view*) view;
-		vm_log_debug("4");
+		vm_log_debug("_xui_page->views[0] * : %d", p_view); // right
 		void * p_internal_view = p_view->view;
-		vm_log_debug("5");
 		struct _xui_text_view * this = (struct _xui_text_view *) p_internal_view;
-		vm_log_debug("this : %d", this);
-		vm_log_debug("6");
-		vm_log_debug("this->render pointer: %d", this->render);
-		this->render(this);
+		vm_log_debug("_xui_text_view *: %d", this); // right
+		vm_log_debug("_xui_text_view->render pointer: %d", this->render);
+		//this->render(this);
 		vm_log_debug("7");
 	}
 	vm_log_debug("8");
 	vm_graphic_point_t positions[FRAME_COUNT] = { };
 	/* composite and display */
-	vm_graphic_blt_frame(g_frame_group, positions, FRAME_COUNT);
+	//vm_graphic_blt_frame(g_frame_group, positions, FRAME_COUNT);
 }
 
 xui_page xui_init_page(void ** views, VMINT view_count) {

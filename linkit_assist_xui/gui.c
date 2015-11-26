@@ -51,6 +51,9 @@ void * views[] = { &text_view };
 static void timer_callback(VM_TIMER_ID_PRECISE tid, void* user_data) {
 	vm_log_debug("timer_callback");
 	xui_validate(page);
+	while (1) {
+		vm_thread_sleep(10000);
+	}
 }
 
 /* Free one frame */
@@ -78,7 +81,11 @@ void handle_system_event(VMINT message, VMINT param) {
 		// eggfly
 		xui_init();
 		text_view = xui_init_text_view();
+		vm_log_debug("xui_text_view *: %d", &text_view);
+		vm_log_debug("xui_text_view.view : %d", text_view.view);
 		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
+		vm_log_debug("xui_page *: %d", &page);
+		vm_log_debug("xui_page.page : %d", page.page);
 		break;
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */
