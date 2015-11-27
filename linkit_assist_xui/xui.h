@@ -4,14 +4,17 @@
 #include "vmtype.h"
 #include "vmgraphic.h"
 
+// TODO convert to void * typedef
 typedef struct {
 	void * page;
 } xui_page;
 
+// TODO convert to void * typedef
 typedef struct {
 	void * view;
 } xui_view;
 
+// TODO convert to void * typedef
 typedef struct {
 	void * view;
 } xui_text_view;
@@ -26,10 +29,10 @@ VMINT xui_view_get_y();
 VMINT xui_view_get_width();
 VMINT xui_view_get_height();
 
-void xui_view_set_x(VMINT);
-void xui_view_set_y(VMINT);
-void xui_view_set_width(VMINT);
-void xui_view_set_height(VMINT);
+void xui_view_set_x(void * view, VMINT value);
+void xui_view_set_y(void * view, VMINT value);
+void xui_view_set_width(void * view, VMINT value);
+void xui_view_set_height(void * view, VMINT value);
 
 xui_text_view xui_init_text_view();
 void xui_free_text_view(xui_text_view view);

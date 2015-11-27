@@ -125,3 +125,13 @@ static void _free_frame(vm_graphic_frame_t *frame) {
 	}
 	frame->buffer_length = 0;
 }
+
+void xui_view_set_x(void * view, VMINT value) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->x = value;
+}
+
+void xui_view_set_y(void * view, VMINT value) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->y = value;
+}
