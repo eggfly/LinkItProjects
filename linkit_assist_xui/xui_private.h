@@ -7,6 +7,7 @@
 #define XUI_DEBUG
 
 struct _xui_page {
+	vm_graphic_color_argb_t background_color;
 	void ** views;
 	VMINT view_count;
 };

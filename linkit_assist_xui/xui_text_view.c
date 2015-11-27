@@ -34,7 +34,8 @@ static void _render_text_view(struct _xui_view * view) {
 	VMCHAR * str = (VMCHAR *) "text";
 	vm_chset_ascii_to_ucs2(g_wstr, 260, str);
 	text_view->text = g_wstr;
-	vm_graphic_draw_text(g_frame, text_view->x, text_view->y, text_view->text);
+	vm_graphic_draw_text(&g_frame[0], text_view->x, text_view->y,
+			text_view->text);
 }
 
 void xui_free_text_view(xui_text_view view) {

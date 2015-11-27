@@ -25,12 +25,10 @@
 #include "vmtype.h"
 #include "vmsystem.h"
 #include "vmres.h"
-#include "vmmemory.h"
 #include "vmlog.h"
 #include "ResID.h"
 #include "vmtimer.h"
 #include "vmthread.h"
-#include <math.h>
 #include "xui.h"
 
 /* Animation timer */
@@ -39,10 +37,13 @@ VM_TIMER_ID_PRECISE g_timer_id;
 xui_page page;
 xui_text_view text_view;
 void * views[] = { &text_view };
+VMINT x = 0, y = 0;
 
 /* Update the rotating line, then update the display */
 static void timer_callback(VM_TIMER_ID_PRECISE tid, void* user_data) {
 	vm_log_debug("timer_callback");
+	xui_view_set_x(text_view.view, ++x);
+	xui_view_set_y(text_view.view, ++y);
 	xui_validate(page);
 }
 

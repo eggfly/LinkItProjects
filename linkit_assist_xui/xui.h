@@ -24,10 +24,10 @@ void xui_release();
 void xui_lcd_st7789s_init();
 void xui_lcd_backlight_level(VMUINT32 ulValue);
 
-VMINT xui_view_get_x();
-VMINT xui_view_get_y();
-VMINT xui_view_get_width();
-VMINT xui_view_get_height();
+VMINT xui_view_get_x(void * view);
+VMINT xui_view_get_y(void * view);
+VMINT xui_view_get_width(void * view);
+VMINT xui_view_get_height(void * view);
 
 void xui_view_set_x(void * view, VMINT value);
 void xui_view_set_y(void * view, VMINT value);

@@ -96,6 +96,11 @@ void xui_validate(xui_page page) {
 	vm_log_debug("_xui_page->views ** : %d", views);
 	vm_log_debug("view_count: %d", view_count);
 #endif
+	// draw background
+	vm_graphic_set_color(p_page->background_color);
+	vm_graphic_draw_solid_rectangle(&g_frame[0], 0, 0, SCREEN_WIDTH,
+			SCREEN_HEIGHT);
+
 	for (i = 0; i < view_count; i++) {
 		void * view = views[i];
 		xui_view * p_view = (xui_view*) view;
