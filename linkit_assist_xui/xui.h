@@ -16,9 +16,26 @@ typedef struct {
 	void * view;
 } xui_text_view;
 
-void xui_init(); // todo: frame handler
+void xui_init();
+void xui_release();
+void xui_lcd_st7789s_init();
+void xui_lcd_backlight_level(VMUINT32 ulValue);
+
+VMINT xui_view_get_x();
+VMINT xui_view_get_y();
+VMINT xui_view_get_width();
+VMINT xui_view_get_height();
+
+void xui_view_set_x(VMINT);
+void xui_view_set_y(VMINT);
+void xui_view_set_width(VMINT);
+void xui_view_set_height(VMINT);
+
 xui_text_view xui_init_text_view();
+void xui_free_text_view(xui_text_view view);
+
 xui_page xui_init_page(void ** views, VMINT view_count);
+void xui_free_page(xui_page page);
 
 // void xui_set_visibility(xui_view * view, VMCHAR visibility);
 // todo: need validate function ?
@@ -26,5 +43,4 @@ xui_page xui_init_page(void ** views, VMINT view_count);
 //void xui_page_start(xui_page * page);
 //void xui_page_back();
 void xui_validate(xui_page page); // todo: frame handler?
-
 #endif

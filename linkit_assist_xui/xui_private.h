@@ -4,6 +4,8 @@
 #define SCREEN_WIDTH 240		/* Set to your display size */
 #define SCREEN_HEIGHT 240		/* Set to your display size */
 
+#define XUI_DEBUG
+
 struct _xui_page {
 	void ** views;
 	VMINT view_count;
@@ -29,3 +31,9 @@ struct _xui_text_view {
 	VMINT text_size;
 	vm_graphic_color_argb_t text_color;
 };
+
+void _init_view(void * view, _render_func func);
+
+#define _xui_free(inner_type, var, member_name) \
+	struct inner_type * _p_view = (struct inner_type *) var.member_name; \
+	vm_free(_p_view);
