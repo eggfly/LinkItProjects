@@ -78,7 +78,7 @@ void handle_system_event(VMINT message, VMINT param) {
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */
 		// vm_thread_sleep(10 * 1000);
-		g_timer_id = vm_timer_create_precise(1000, timer_callback, NULL);
+		g_timer_id = vm_timer_create_precise(100, timer_callback, NULL);
 		timer_callback(g_timer_id, NULL);
 		break;
 	case VM_EVENT_QUIT:

@@ -40,10 +40,10 @@ static VMBOOL _allocate_frame(vm_graphic_frame_t *frame) {
 		return VM_FALSE;
 	}
 	/* We use 16-bit color, 2 bytes per pixel */
-	frame->color_format = VM_GRAPHIC_COLOR_FORMAT_16_BIT;
+	frame->color_format = VM_GRAPHIC_COLOR_FORMAT_32_BIT;
 	frame->width = SCREEN_WIDTH;
 	frame->height = SCREEN_HEIGHT;
-	frame->buffer_length = SCREEN_WIDTH * SCREEN_HEIGHT * 2;
+	frame->buffer_length = SCREEN_WIDTH * SCREEN_HEIGHT * 4;
 	frame->buffer = vm_malloc_dma(frame->buffer_length);
 	if (frame->buffer == NULL) {
 		return VM_FALSE;
