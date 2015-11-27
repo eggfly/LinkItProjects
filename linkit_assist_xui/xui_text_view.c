@@ -18,9 +18,11 @@ xui_text_view xui_init_text_view() {
 	_init_view(result.view, _render_text_view);
 	struct _xui_text_view * p_view = (struct _xui_text_view *) result.view;
 	p_view->text_size = 18; // TODO
-	vm_graphic_color_argb_t * color = &p_view->text_color;
-	color->a = 255;
-	color->r = color->g = color->b = 255; // TODO
+	// default text color is black
+	vm_graphic_color_argb_t color;
+	color.a = 255;
+	color.r = color.g = color.b = 0;
+	p_view->text_color = color;
 	return result;
 }
 
@@ -36,6 +38,11 @@ static void _render_text_view(struct _xui_view * view) {
 	text_view->text = g_wstr;
 	vm_graphic_draw_text(&g_frame[0], text_view->x, text_view->y,
 			text_view->text);
+}
+
+void xui_text_view_set_text_color(void * view, vm_graphic_color_argb_t color) {
+	struct _xui_text_view * p_view = (struct _xui_text_view *) view;
+	p_view->text_color = color;
 }
 
 void xui_free_text_view(xui_text_view view) {

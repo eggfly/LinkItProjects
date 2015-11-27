@@ -19,7 +19,7 @@ typedef void (*_render_func)(struct _xui_view * view);
 #define XUI_VIEW_MEMBERS \
 	VMINT x, y;\
 	VMINT width, height;\
-	VMCHAR visibility;\
+	VMBOOL visibility;\
 	_render_func render;
 
 struct _xui_view {

@@ -99,7 +99,7 @@ void xui_validate(xui_page page) {
 	// draw background
 	vm_graphic_set_color(p_page->background_color);
 	vm_graphic_draw_solid_rectangle(&g_frame[0], 0, 0, SCREEN_WIDTH,
-			SCREEN_HEIGHT);
+	SCREEN_HEIGHT);
 
 	for (i = 0; i < view_count; i++) {
 		void * view = views[i];
@@ -114,7 +114,9 @@ void xui_validate(xui_page page) {
 		vm_log_debug("_xui_view->visibility: %d", this->visibility);
 		vm_log_debug("_xui_view->render pointer: %d", this->render);
 #endif
-		this->render(this);
+		if (this->visibility) {
+			this->render(this);
+		}
 	}
 	vm_graphic_point_t positions[FRAME_COUNT] = { };
 	/* composite and display */
@@ -139,4 +141,9 @@ void xui_view_set_x(void * view, VMINT value) {
 void xui_view_set_y(void * view, VMINT value) {
 	struct _xui_view * p_view = (struct _xui_view *) view;
 	p_view->y = value;
+}
+
+void xui_view_set_visibility(void * view, VMBOOL visibility) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->visibility = visibility;
 }

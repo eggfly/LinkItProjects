@@ -28,6 +28,7 @@
 #include "vmlog.h"
 #include "ResID.h"
 #include "vmtimer.h"
+#include "vmgraphic.h"
 #include "vmthread.h"
 #include "xui.h"
 
@@ -38,13 +39,31 @@ xui_page page;
 xui_text_view text_view;
 void * views[] = { &text_view };
 VMINT x = 0, y = 0;
+VMBOOL visibility = VM_TRUE;
 
 /* Update the rotating line, then update the display */
 static void timer_callback(VM_TIMER_ID_PRECISE tid, void* user_data) {
 	vm_log_debug("timer_callback");
+	xui_view_set_visibility(text_view.view, visibility);
+	visibility = !visibility;
 	xui_view_set_x(text_view.view, ++x);
 	xui_view_set_y(text_view.view, ++y);
+	vm_graphic_color_argb_t color;
+	color.a = 128 - x; // alpha value changes
+	color.r = 255;
+	color.g = 0;
+	color.b = 0;
+	xui_text_view_set_text_color(text_view.view, color);
 	xui_validate(page);
+}
+
+static vm_graphic_color_argb_t white() {
+	vm_graphic_color_argb_t color;
+	color.a = 255;
+	color.r = 255;
+	color.g = 255;
+	color.b = 255;
+	return color;
 }
 
 /* The callback to be invoked by the system engine. */
@@ -54,10 +73,11 @@ void handle_system_event(VMINT message, VMINT param) {
 		xui_init();
 		text_view = xui_init_text_view();
 		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
+		xui_page_set_background_color(page.page, white());
 		break;
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */
-		vm_thread_sleep(10 * 1000);
+		// vm_thread_sleep(10 * 1000);
 		g_timer_id = vm_timer_create_precise(1000, timer_callback, NULL);
 		timer_callback(g_timer_id, NULL);
 		break;
