@@ -1,4 +1,15 @@
 # eggfly
+
+# eclipse
 .metadata
 RemoteSystemsTempFiles
 
+# compiler
+# ELF 32-bit LSB  relocatable, ARM, EABI5 version 1 (SYSV), not stripped
+*.o
+# ELF 32-bit LSB  shared object, ARM, EABI5 version 1 (SYSV), dynamically linked (uses shared libs), not stripped
+*.dbg
+# ELF 32-bit LSB  shared object, ARM, EABI5 version 1 (SYSV), dynamically linked (uses shared libs), not stripped
+*.axf
+# ELF 32-bit LSB  shared object, ARM, EABI5 version 1 (SYSV), dynamically linked (uses shared libs), not stripped
+# *.vxp
