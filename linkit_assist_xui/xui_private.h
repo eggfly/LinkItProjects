@@ -32,6 +32,7 @@ struct _xui_text_view {
 	VMWCHAR text[XUI_MAX_CHAR_LENGTH];
 	VMINT text_size;
 	vm_graphic_color_argb_t text_color;
+	xui_gravity gravity;
 };
 
 void _init_view(void * view, _render_func func);

@@ -142,6 +142,26 @@ static void _free_frame(vm_graphic_frame_t *frame) {
 	frame->buffer_length = 0;
 }
 
+VMINT xui_view_get_x(void * view) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	return p_view->x;
+}
+
+VMINT xui_view_get_y(void * view) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	return p_view->y;
+}
+
+VMINT xui_view_get_width(void * view) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	return p_view->width;
+}
+
+VMINT xui_view_get_height(void * view) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	return p_view->height;
+}
+
 void xui_view_set_x(void * view, VMINT value) {
 	struct _xui_view * p_view = (struct _xui_view *) view;
 	p_view->x = value;
@@ -150,6 +170,16 @@ void xui_view_set_x(void * view, VMINT value) {
 void xui_view_set_y(void * view, VMINT value) {
 	struct _xui_view * p_view = (struct _xui_view *) view;
 	p_view->y = value;
+}
+
+void xui_view_set_width(void * view, VMINT value) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->width = value;
+}
+
+void xui_view_set_height(void * view, VMINT value) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->height = value;
 }
 
 void xui_view_set_visibility(void * view, VMBOOL visibility) {

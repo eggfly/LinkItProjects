@@ -35,9 +35,11 @@
 /* Animation timer */
 VM_TIMER_ID_PRECISE g_timer_id;
 
-#define VIEW_COUNT 3
+#define ROWS 4
+#define COLUMNS 3
+#define VIEW_COUNT (ROWS * COLUMNS)
 xui_page page;
-xui_text_view texts[VIEW_COUNT];
+xui_text_view texts[ROWS][COLUMNS];
 void * views[VIEW_COUNT] = { };
 VMINT x = 0, y = 0;
 
@@ -61,21 +63,36 @@ void handle_system_event(VMINT message, VMINT param) {
 	switch (message) {
 	case VM_EVENT_CREATE:
 		xui_init();
-		int i;
-		for (i = 0; i < VIEW_COUNT; i++) {
-			texts[i] = xui_init_text_view();
-			vm_graphic_color_argb_t color;
-			color.a = 255;
-			color.r = 0;
-			color.g = 255;
-			color.b = 0;
-			xui_view_set_background_color(texts[i].view, color);
-			views[i] = &texts[i];
-			xui_view_set_x(texts[i].view, i * 30);
+		int row, col;
+		for (row = 0; row < ROWS; row++) {
+			for (col = 0; col < COLUMNS; col++) {
+				texts[row][col] = xui_init_text_view();
+				void * view = texts[row][col].view;
+				vm_graphic_color_argb_t color;
+				color.a = 255;
+				color.r = 0;
+				color.g = 255;
+				color.b = 0;
+				xui_view_set_background_color(view, color);
+				xui_view_set_x(view, 30 + col * 60);
+				xui_view_set_y(view, 30 + row * 30);
+				xui_view_set_width(view, 60);
+				xui_view_set_height(view, 30);
+				views[row * COLUMNS + col] = &texts[row][col];
+			}
 		}
-		xui_text_view_set_text(texts[0].view, (VMCHAR *) "1");
-		xui_text_view_set_text(texts[1].view, (VMCHAR *) "2");
-		xui_text_view_set_text(texts[2].view, (VMCHAR *) "3");
+		xui_text_view_set_text(texts[0][0].view, (VMCHAR *) "1");
+		xui_text_view_set_text(texts[0][1].view, (VMCHAR *) "2");
+		xui_text_view_set_text(texts[0][2].view, (VMCHAR *) "3");
+		xui_text_view_set_text(texts[1][0].view, (VMCHAR *) "4");
+		xui_text_view_set_text(texts[1][1].view, (VMCHAR *) "5");
+		xui_text_view_set_text(texts[1][2].view, (VMCHAR *) "6");
+		xui_text_view_set_text(texts[2][0].view, (VMCHAR *) "7");
+		xui_text_view_set_text(texts[2][1].view, (VMCHAR *) "8");
+		xui_text_view_set_text(texts[2][2].view, (VMCHAR *) "9");
+		xui_text_view_set_text(texts[3][0].view, (VMCHAR *) "*");
+		xui_text_view_set_text(texts[3][1].view, (VMCHAR *) "0");
+		xui_text_view_set_text(texts[3][2].view, (VMCHAR *) "#");
 		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
 		xui_page_set_background_color(page.page, white());
 		break;

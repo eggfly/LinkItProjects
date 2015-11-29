@@ -22,6 +22,18 @@ typedef struct {
 	void * view;
 } xui_text_view;
 
+typedef enum {
+	XUI_TOP_LEFT,
+	XUI_TOP_CENTER,
+	XUI_TOP_RIGHT,
+	XUI_CENTER_LEFT,
+	XUI_CENTER,
+	XUI_CENTER_RIGHT,
+	XUI_BOTTOM_LEFT,
+	XUI_BOTTOM_CENTER,
+	XUI_BOTTOM_RIGHT,
+} xui_gravity;
+
 void xui_init();
 void xui_release();
 void xui_lcd_st7789s_init();
@@ -43,6 +55,7 @@ xui_text_view xui_init_text_view();
 void xui_text_view_set_text(void * view, VMSTR str);
 void xui_text_view_set_text_wide(void * view, VMWSTR wstr);
 void xui_text_view_set_text_color(void * view, vm_graphic_color_argb_t color);
+void xui_text_view_set_gravity(void *view, xui_gravity gravity);
 void xui_free_text_view(xui_text_view view);
 
 xui_page xui_init_page(void ** views, VMINT view_count);

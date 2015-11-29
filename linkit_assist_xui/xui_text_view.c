@@ -1,3 +1,8 @@
+/**
+ * xui text view
+ * TODO: calculate text size for inside layout gravity
+ */
+
 #include "xui_private.h"
 #include "vmgraphic_font.h"
 #include "vmchset.h"
@@ -25,6 +30,7 @@ xui_text_view xui_init_text_view() {
 	color.a = 255;
 	color.r = color.g = color.b = 0;
 	p_view->text_color = color;
+	p_view->gravity = XUI_TOP_LEFT;
 	return result;
 }
 
@@ -59,4 +65,9 @@ void xui_text_view_set_text(void * view, VMSTR str) {
 void xui_text_view_set_text_wide(void * view, VMWSTR wstr) {
 	struct _xui_text_view * p_view = (struct _xui_text_view *) view;
 	vm_wstr_safe_wstrcpy(p_view->text, XUI_MAX_CHAR_LENGTH, wstr);
+}
+
+void xui_text_view_set_gravity(void *view, xui_gravity gravity) {
+	struct _xui_text_view * p_view = (struct _xui_text_view *) view;
+	p_view->gravity = gravity;
 }
