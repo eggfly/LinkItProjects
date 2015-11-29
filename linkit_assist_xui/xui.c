@@ -82,6 +82,10 @@ void _init_view(void * view, _render_func func) {
 	p->x = p->y = 0;
 	p->width = p->height = 80; // TODO
 	p->visibility = 1;
+	vm_graphic_color_argb_t color;
+	// transparent
+	color.a = color.r = color.g = color.b = 0;
+	p->background_color = color;
 }
 
 void xui_validate(xui_page page) {
@@ -115,6 +119,11 @@ void xui_validate(xui_page page) {
 		vm_log_debug("_xui_view->render pointer: %d", this->render);
 #endif
 		if (this->visibility) {
+			// draw view background
+			vm_graphic_set_color(this->background_color);
+			vm_graphic_draw_solid_rectangle(&g_frame[0], this->x, this->y,
+					this->width, this->height);
+			// view sub type's render logic (virtual function)
 			this->render(this);
 		}
 	}
@@ -146,4 +155,9 @@ void xui_view_set_y(void * view, VMINT value) {
 void xui_view_set_visibility(void * view, VMBOOL visibility) {
 	struct _xui_view * p_view = (struct _xui_view *) view;
 	p_view->visibility = visibility;
+}
+
+void xui_view_set_background_color(void * view, vm_graphic_color_argb_t color) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->background_color = color;
 }

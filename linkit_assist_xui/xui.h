@@ -35,6 +35,7 @@ void xui_view_set_x(void * view, VMINT value);
 void xui_view_set_y(void * view, VMINT value);
 void xui_view_set_width(void * view, VMINT value);
 void xui_view_set_height(void * view, VMINT value);
+void xui_view_set_background_color(void * view, vm_graphic_color_argb_t color);
 
 xui_text_view xui_init_text_view();
 void xui_text_view_set_text_color(void * view, vm_graphic_color_argb_t color);

@@ -72,6 +72,12 @@ void handle_system_event(VMINT message, VMINT param) {
 	case VM_EVENT_CREATE:
 		xui_init();
 		text_view = xui_init_text_view();
+		vm_graphic_color_argb_t color;
+		color.a = 255;
+		color.r = 0;
+		color.g = 255;
+		color.b = 0;
+		xui_view_set_background_color(text_view.view, color);
 		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
 		xui_page_set_background_color(page.page, white());
 		break;

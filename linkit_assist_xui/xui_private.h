@@ -17,10 +17,11 @@ struct _xui_view;
 typedef void (*_render_func)(struct _xui_view * view);
 
 #define XUI_VIEW_MEMBERS \
-	VMINT x, y;\
-	VMINT width, height;\
-	VMBOOL visibility;\
-	_render_func render;
+	VMINT x, y; \
+	VMINT width, height; \
+	VMBOOL visibility; \
+	vm_graphic_color_argb_t background_color; \
+	_render_func render; \
 
 struct _xui_view {
 	XUI_VIEW_MEMBERS
