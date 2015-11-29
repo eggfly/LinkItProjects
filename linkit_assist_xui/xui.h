@@ -4,6 +4,8 @@
 #include "vmtype.h"
 #include "vmgraphic.h"
 
+#define XUI_MAX_CHAR_LENGTH 260
+
 // TODO convert to void * typedef
 typedef struct {
 	void * page;
@@ -38,6 +40,8 @@ void xui_view_set_height(void * view, VMINT value);
 void xui_view_set_background_color(void * view, vm_graphic_color_argb_t color);
 
 xui_text_view xui_init_text_view();
+void xui_text_view_set_text(void * view, VMSTR str);
+void xui_text_view_set_text_wide(void * view, VMWSTR wstr);
 void xui_text_view_set_text_color(void * view, vm_graphic_color_argb_t color);
 void xui_free_text_view(xui_text_view view);
 

@@ -35,25 +35,15 @@
 /* Animation timer */
 VM_TIMER_ID_PRECISE g_timer_id;
 
+#define VIEW_COUNT 3
 xui_page page;
-xui_text_view text_view;
-void * views[] = { &text_view };
+xui_text_view texts[VIEW_COUNT];
+void * views[VIEW_COUNT] = { };
 VMINT x = 0, y = 0;
-VMBOOL visibility = VM_TRUE;
 
 /* Update the rotating line, then update the display */
 static void timer_callback(VM_TIMER_ID_PRECISE tid, void* user_data) {
 	vm_log_debug("timer_callback");
-	xui_view_set_visibility(text_view.view, visibility);
-	visibility = !visibility;
-	xui_view_set_x(text_view.view, ++x);
-	xui_view_set_y(text_view.view, ++y);
-	vm_graphic_color_argb_t color;
-	color.a = 128 - x; // alpha value changes
-	color.r = 255;
-	color.g = 0;
-	color.b = 0;
-	xui_text_view_set_text_color(text_view.view, color);
 	xui_validate(page);
 }
 
@@ -71,13 +61,21 @@ void handle_system_event(VMINT message, VMINT param) {
 	switch (message) {
 	case VM_EVENT_CREATE:
 		xui_init();
-		text_view = xui_init_text_view();
-		vm_graphic_color_argb_t color;
-		color.a = 255;
-		color.r = 0;
-		color.g = 255;
-		color.b = 0;
-		xui_view_set_background_color(text_view.view, color);
+		int i;
+		for (i = 0; i < VIEW_COUNT; i++) {
+			texts[i] = xui_init_text_view();
+			vm_graphic_color_argb_t color;
+			color.a = 255;
+			color.r = 0;
+			color.g = 255;
+			color.b = 0;
+			xui_view_set_background_color(texts[i].view, color);
+			views[i] = &texts[i];
+			xui_view_set_x(texts[i].view, i * 30);
+		}
+		xui_text_view_set_text(texts[0].view, (VMCHAR *) "1");
+		xui_text_view_set_text(texts[1].view, (VMCHAR *) "2");
+		xui_text_view_set_text(texts[2].view, (VMCHAR *) "3");
 		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
 		xui_page_set_background_color(page.page, white());
 		break;
