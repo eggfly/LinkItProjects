@@ -30,7 +30,7 @@
 #include "vmtimer.h"
 #include "vmgraphic.h"
 #include "vmthread.h"
-#include "xui.h"
+#include "xui/xui.h"
 
 /* Animation timer */
 VM_TIMER_ID_PRECISE g_timer_id;
