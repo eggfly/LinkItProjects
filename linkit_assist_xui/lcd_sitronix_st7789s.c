@@ -103,11 +103,6 @@ void lcd_block_clear_st7789s(VMUINT16 x1, VMUINT16 y1, VMUINT16 x2, VMUINT16 y2,
 		VMUINT16 data) {
 	VMUINT16 LCD_x;
 	VMUINT16 LCD_y;
-	VMUINT8 r_color, g_color, b_color;
-
-	r_color = ((data & 0xF800) >> 10) | (data >> 15); /* transfer to RGB666 */
-	g_color = ((data >> 5) & 0x3F);
-	b_color = ((data & 0x1F) << 1) | ((data >> 4) & 0x1);
 
 	LCD_CtrlWrite_ST7789S(0x2A);
 	LCD_DataWrite_ST7789S((x1 & 0xFF00) >> 8);
