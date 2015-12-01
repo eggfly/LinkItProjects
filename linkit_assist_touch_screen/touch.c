@@ -15,6 +15,7 @@
 
  Just run this application,and see the catcher log or monitor log or lcd.
  */
+#include <stdio.h>
 #include "vmtype.h" 
 #include "vmlog.h"
 #include "vmsystem.h"
@@ -23,8 +24,11 @@
 #include "vmtouch.h"
 #include "vmdcl.h"
 #include "vmboard.h"
+#include "vmmemory.h"
+#include "vmchset.h"
 #include "vmdcl_pwm.h"
-#include "stdio.h"
+#include "lcd_sitronix_st7789s.h"
+#include "tp_goodix_gt9xx.h"
 
 VMCHAR g_buff[256];
 
@@ -70,7 +74,7 @@ void lcd_backlight_level(VMUINT32 ulValue) {
 
 void log_init(void) {
 	vm_graphic_color_argb_t color; /* use to set screen and text color */
-	vm_graphic_point_t frame_position[1] = { 0, 0 };
+	vm_graphic_point_t frame_position[1] = { { 0, 0 } };
 
 	g_frame.width = 240;
 	g_frame.height = 240;
@@ -95,9 +99,8 @@ void log_init(void) {
 
 void log_info(VMINT line, VMSTR str) {
 	VMWCHAR s[260]; /* string's buffer */
-	VMUINT32 size;
 	vm_graphic_color_argb_t color; /* use to set screen and text color */
-	vm_graphic_point_t frame_position[1] = { 0, 0 };
+	vm_graphic_point_t frame_position[1] = { { 0, 0 } };
 
 	vm_chset_ascii_to_ucs2(s, 260, str);
 	/* set color and draw bg*/
@@ -124,7 +127,7 @@ void log_info(VMINT line, VMSTR str) {
 }
 void handle_touchevt(VM_TOUCH_EVENT event, VMINT x, VMINT y) {
 	vm_log_info("touch event=%d,touch x=%d,touch y=%d", event, x, y); /* output log to monitor or catcher */
-	sprintf(g_buff, "touch event = %d, x=%d, y=%d", event, x, y);
+	sprintf((char *) g_buff, "touch event = %d, x=%d, y=%d", event, x, y);
 	log_info(2, g_buff); /* output log to LCD if have */
 }
 
@@ -134,7 +137,7 @@ void handle_sysevt(VMINT message, VMINT param) {
 		break;
 	case VM_EVENT_PAINT:
 		log_init();
-		log_info(1, "open application success");
+		log_info(1, (VMSTR) "open application success");
 		break;
 	case VM_EVENT_QUIT:
 		break;
@@ -144,10 +147,8 @@ void handle_sysevt(VMINT message, VMINT param) {
 /* Entry point */
 void vm_main(void) {
 	/* register system events handler */
-#if defined(__HDK_LINKIT_ASSIST_2502__)    
 	lcd_st7789s_init();
 	lcd_backlight_level(100);
-#endif//#if defined(__HDK_LINKIT_ASSIST_2502__)    
 	tp_gt9xx_init();
 	font_init();
 	vm_pmng_register_system_event_callback(handle_sysevt);

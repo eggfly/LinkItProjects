@@ -1,4 +1,3 @@
-
 #ifndef __TP_GOODIX_GT9XX_H__
 #define __TP_GOODIX_GT9XX_H__
 
@@ -76,8 +75,6 @@
 #define GTP_DEBUG_ARRAY_ON 1
 #define GTP_SUPPORT_I2C_DMA 1
 
-
-
 #define GTP_DEBUG_ON         1
 
 #define REG_2ND_CMD         0x8040
@@ -105,31 +102,28 @@
 #define MODE_SEND           0xAA
 #define MODE_RECEIVE        0xBB
 
-typedef enum
-{
-	CHIP_TYPE_GT9 = 0,
-	CHIP_TYPE_GT9F = 1,
-}CHIP_TYPE_T;
-
+typedef enum {
+	CHIP_TYPE_GT9 = 0, CHIP_TYPE_GT9F = 1,
+} CHIP_TYPE_T;
 
 //end
-typedef struct
-{
-    VMUINT8 vendor_id_1;
-    VMUINT8 vendor_id_2;
-    VMUINT8 product_id_1;
-    VMUINT8 product_id_2;
-    VMUINT8 version_1;
-    VMUINT8 version_2;
+typedef struct {
+	VMUINT8 vendor_id_1;
+	VMUINT8 vendor_id_2;
+	VMUINT8 product_id_1;
+	VMUINT8 product_id_2;
+	VMUINT8 version_1;
+	VMUINT8 version_2;
 } ctp_info_t;
 
-extern VM_DRV_TP_BOOL ctp_i2c_receive_ext(VMUINT8 ucDeviceAddr, VMUINT16 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
-extern VM_DRV_TP_BOOL ctp_i2c_send(VMUINT8 ucDeviceAddr, VMUINT8 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
+extern VM_DRV_TP_BOOL ctp_i2c_receive_ext(VMUINT8 ucDeviceAddr,
+		VMUINT16 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
+extern VM_DRV_TP_BOOL ctp_i2c_send(VMUINT8 ucDeviceAddr, VMUINT8 ucBufferIndex,
+		VMUINT8* pucData, VMUINT32 unDataLength);
 
 void tp_gt9xx_init(void);
 
 #define CTP_I2C_read(a,b,c) ctp_i2c_receive_ext( CTP_SLAVE_ADDR, a, b, c)
 #define CTP_I2C_send(a,b,c) ctp_i2c_send_ext( CTP_SLAVE_ADDR, a, b, c)
-
 
 #endif

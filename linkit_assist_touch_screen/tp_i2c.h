@@ -31,15 +31,19 @@ extern VM_DRV_TP_BOOL ctp_i2c_send_byte(VMUINT8 ucData);
 extern VMUINT8 ctp_i2c_receive_byte(VM_DRV_TP_BOOL bAck);
 
 // I2C send data fuction
-extern VM_DRV_TP_BOOL ctp_i2c_send(VMUINT8 ucDeviceAddr, VMUINT8 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
+extern VM_DRV_TP_BOOL ctp_i2c_send(VMUINT8 ucDeviceAddr, VMUINT8 ucBufferIndex,
+		VMUINT8* pucData, VMUINT32 unDataLength);
 
 // I2C receive data function
-extern VM_DRV_TP_BOOL ctp_i2c_receive(VMUINT8 ucDeviceAddr, VMUINT8 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
+extern VM_DRV_TP_BOOL ctp_i2c_receive(VMUINT8 ucDeviceAddr,
+		VMUINT8 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
 
 // I2C send data for 16 bits address fuction
-extern VM_DRV_TP_BOOL ctp_i2c_send_ext(VMUINT8 ucDeviceAddr, VMUINT16 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
+extern VM_DRV_TP_BOOL ctp_i2c_send_ext(VMUINT8 ucDeviceAddr,
+		VMUINT16 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
 
 // I2C receive data for 16 bits address function
-extern VM_DRV_TP_BOOL ctp_i2c_receive_ext(VMUINT8 ucDeviceAddr, VMUINT16 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
+extern VM_DRV_TP_BOOL ctp_i2c_receive_ext(VMUINT8 ucDeviceAddr,
+		VMUINT16 ucBufferIndex, VMUINT8* pucData, VMUINT32 unDataLength);
 
 #endif
