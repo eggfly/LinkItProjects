@@ -54,23 +54,22 @@ static void font_init(void) {
 	}
 }
 
-#if defined(__HDK_LINKIT_ASSIST_2502__)
 void lcd_backlight_level(VMUINT32 ulValue) {
 	VM_DCL_HANDLE pwm_handle;
 	vm_dcl_pwm_set_clock_t pwm_clock;
 	vm_dcl_pwm_set_counter_threshold_t pwm_config_adv;
 	vm_dcl_config_pin_mode(VM_PIN_P1, VM_DCL_PIN_MODE_PWM);
-	pwm_handle = vm_dcl_open(PIN2PWM(VM_PIN_P1),vm_dcl_get_owner_id());
-	vm_dcl_control(pwm_handle,VM_PWM_CMD_START,0);
+	pwm_handle = vm_dcl_open(PIN2PWM(VM_PIN_P1), vm_dcl_get_owner_id());
+	vm_dcl_control(pwm_handle, VM_PWM_CMD_START, 0);
 	pwm_config_adv.counter = 100;
 	pwm_config_adv.threshold = ulValue;
 	pwm_clock.source_clock = 0;
-	pwm_clock.source_clock_division =3;
-	vm_dcl_control(pwm_handle,VM_PWM_CMD_SET_CLOCK,(void *)(&pwm_clock));
-	vm_dcl_control(pwm_handle,VM_PWM_CMD_SET_COUNTER_AND_THRESHOLD,(void *)(&pwm_config_adv));
+	pwm_clock.source_clock_division = 3;
+	vm_dcl_control(pwm_handle, VM_PWM_CMD_SET_CLOCK, (void *) (&pwm_clock));
+	vm_dcl_control(pwm_handle, VM_PWM_CMD_SET_COUNTER_AND_THRESHOLD,
+			(void *) (&pwm_config_adv));
 	vm_dcl_close(pwm_handle);
 }
-#endif //#if defined(__HDK_LINKIT_ASSIST_2502__)
 
 void log_init(void) {
 	vm_graphic_color_argb_t color; /* use to set screen and text color */
@@ -92,9 +91,7 @@ void log_init(void) {
 	vm_graphic_set_color(color);
 	vm_graphic_draw_solid_rectangle(&g_frame, 0, 0, 240, 240);
 
-#if defined(__HDK_LINKIT_ASSIST_2502__)
-	vm_graphic_blt_frame(g_frame_blt_group, frame_position, (VMINT)1);
-#endif //#if defined(__HDK_LINKIT_ASSIST_2502__)    
+	vm_graphic_blt_frame(g_frame_blt_group, frame_position, (VMINT) 1);
 }
 
 void log_info(VMINT line, VMSTR str) {
@@ -120,10 +117,8 @@ void log_info(VMINT line, VMSTR str) {
 	vm_graphic_set_font_size(18);
 	vm_graphic_draw_text(&g_frame, 0, line * 20, s);
 
-#if defined(__HDK_LINKIT_ASSIST_2502__)
 	/* flush the screen with text data */
-	vm_graphic_blt_frame(g_frame_blt_group, frame_position, (VMINT)1);
-#endif // #if defined(__HDK_LINKIT_ASSIST_2502__)    
+	vm_graphic_blt_frame(g_frame_blt_group, frame_position, (VMINT) 1);
 }
 void handle_touchevt(VM_TOUCH_EVENT event, VMINT x, VMINT y) {
 	vm_log_info("touch event=%d,touch x=%d,touch y=%d", event, x, y); /* output log to monitor or catcher */

@@ -31,6 +31,9 @@
 #include "vmgraphic.h"
 #include "vmthread.h"
 #include "xui/xui.h"
+#include "lcd_sitronix_st7789s.h"
+#include "tp_goodix_gt9xx.h"
+#include "vmtouch.h"
 
 /* Animation timer */
 VM_TIMER_ID_PRECISE g_timer_id;
@@ -99,7 +102,7 @@ void handle_system_event(VMINT message, VMINT param) {
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */
 		// vm_thread_sleep(10 * 1000);
-		g_timer_id = vm_timer_create_precise(100, timer_callback, NULL);
+		g_timer_id = vm_timer_create_precise(8000, timer_callback, NULL);
 		timer_callback(g_timer_id, NULL);
 		break;
 	case VM_EVENT_QUIT:
@@ -111,10 +114,17 @@ void handle_system_event(VMINT message, VMINT param) {
 	}
 }
 
+void handle_touchevt(VM_TOUCH_EVENT event, VMINT x, VMINT y) {
+	/* output log to monitor or catcher */
+	vm_log_info("touch event=%d, x=%d, y=%d", event, x, y);
+}
+
 /* Entry point */
 void vm_main(void) {
 	xui_lcd_st7789s_init();
-	xui_lcd_backlight_level(60);
+	xui_lcd_backlight_level(100);
+	tp_gt9xx_init();
 	/* register system events handler */
 	vm_pmng_register_system_event_callback(handle_system_event);
+	vm_touch_register_event_callback(handle_touchevt);
 }
