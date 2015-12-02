@@ -31,8 +31,6 @@
 #include "vmgraphic.h"
 #include "vmthread.h"
 #include "xui/xui.h"
-#include "lcd_sitronix_st7789s.h"
-#include "tp_goodix_gt9xx.h"
 #include "vmtouch.h"
 
 /* Animation timer */
@@ -121,9 +119,9 @@ void handle_touchevt(VM_TOUCH_EVENT event, VMINT x, VMINT y) {
 
 /* Entry point */
 void vm_main(void) {
-	xui_lcd_st7789s_init();
+	xui_lcd_init();
 	xui_lcd_backlight_level(100);
-	tp_gt9xx_init();
+	xui_touch_init();
 	/* register system events handler */
 	vm_pmng_register_system_event_callback(handle_system_event);
 	vm_touch_register_event_callback(handle_touchevt);

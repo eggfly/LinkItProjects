@@ -7,7 +7,7 @@
 
 #define BACKLIGHT_PIN VM_PIN_P1
 
-void xui_lcd_st7789s_init() {
+void xui_lcd_init() {
 	lcd_st7789s_init();
 }
 

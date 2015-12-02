@@ -36,8 +36,9 @@ typedef enum {
 
 void xui_init();
 void xui_release();
-void xui_lcd_st7789s_init();
+void xui_lcd_init();
 void xui_lcd_backlight_level(VMUINT32 ulValue);
+void xui_touch_init();
 
 VMINT xui_view_get_x(void * view);
 VMINT xui_view_get_y(void * view);
