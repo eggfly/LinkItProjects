@@ -68,7 +68,7 @@ void handle_system_event(VMINT message, VMINT param) {
 		for (row = 0; row < ROWS; row++) {
 			for (col = 0; col < COLUMNS; col++) {
 				texts[row][col] = xui_init_text_view();
-				void * view = texts[row][col].view;
+				void * view = texts[row][col];
 				vm_graphic_color_argb_t color;
 				color.a = 255;
 				color.r = 0;
@@ -82,20 +82,20 @@ void handle_system_event(VMINT message, VMINT param) {
 				views[row * COLUMNS + col] = &texts[row][col];
 			}
 		}
-		xui_text_view_set_text(texts[0][0].view, (VMCHAR *) "1");
-		xui_text_view_set_text(texts[0][1].view, (VMCHAR *) "2");
-		xui_text_view_set_text(texts[0][2].view, (VMCHAR *) "3");
-		xui_text_view_set_text(texts[1][0].view, (VMCHAR *) "4");
-		xui_text_view_set_text(texts[1][1].view, (VMCHAR *) "5");
-		xui_text_view_set_text(texts[1][2].view, (VMCHAR *) "6");
-		xui_text_view_set_text(texts[2][0].view, (VMCHAR *) "7");
-		xui_text_view_set_text(texts[2][1].view, (VMCHAR *) "8");
-		xui_text_view_set_text(texts[2][2].view, (VMCHAR *) "9");
-		xui_text_view_set_text(texts[3][0].view, (VMCHAR *) "*");
-		xui_text_view_set_text(texts[3][1].view, (VMCHAR *) "0");
-		xui_text_view_set_text(texts[3][2].view, (VMCHAR *) "#");
-		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *));
-		xui_page_set_background_color(page.page, white());
+		xui_text_view_set_text(texts[0][0], (VMCHAR *) "1");
+		xui_text_view_set_text(texts[0][1], (VMCHAR *) "2");
+		xui_text_view_set_text(texts[0][2], (VMCHAR *) "3");
+		xui_text_view_set_text(texts[1][0], (VMCHAR *) "4");
+		xui_text_view_set_text(texts[1][1], (VMCHAR *) "5");
+		xui_text_view_set_text(texts[1][2], (VMCHAR *) "6");
+		xui_text_view_set_text(texts[2][0], (VMCHAR *) "7");
+		xui_text_view_set_text(texts[2][1], (VMCHAR *) "8");
+		xui_text_view_set_text(texts[2][2], (VMCHAR *) "9");
+		xui_text_view_set_text(texts[3][0], (VMCHAR *) "*");
+		xui_text_view_set_text(texts[3][1], (VMCHAR *) "0");
+		xui_text_view_set_text(texts[3][2], (VMCHAR *) "#");
+		page = xui_init_page((void**) &views, sizeof(views) / sizeof(void *)); // TODO: check
+		xui_page_set_background_color(page, white());
 		break;
 	case VM_EVENT_PAINT:
 		/* Graphics library is ready to use, start drawing */

@@ -18,20 +18,20 @@ xui_text_view xui_init_text_view() {
 #ifdef XUI_DEBUG
 	vm_log_debug("xui_init_text_view");
 #endif
-	xui_text_view result;
-	result.view = vm_malloc(sizeof(struct _xui_text_view));
-	_init_view(result.view, _render_text_view);
-	struct _xui_text_view * p_view = (struct _xui_text_view *) result.view;
+	xui_text_view p_view;
+	p_view = vm_malloc(sizeof(struct _xui_text_view));
+	_init_view(p_view, _render_text_view);
+	struct _xui_text_view * view = (struct _xui_text_view *) p_view;
 	// default text for debug
-	xui_text_view_set_text((void *) p_view, (VMCHAR *) "xui_text_view");
-	p_view->text_size = 18; // TODO
+	xui_text_view_set_text(p_view, (VMCHAR *) "xui_text_view");
+	view->text_size = 18; // TODO
 	// default text color is black
 	vm_graphic_color_argb_t color;
 	color.a = 255;
 	color.r = color.g = color.b = 0;
-	p_view->text_color = color;
-	p_view->gravity = XUI_TOP_LEFT;
-	return result;
+	view->text_color = color;
+	view->gravity = XUI_TOP_LEFT;
+	return p_view;
 }
 
 /**
@@ -54,7 +54,7 @@ void xui_text_view_set_text_color(void * view, vm_graphic_color_argb_t color) {
 }
 
 void xui_free_text_view(xui_text_view view) {
-	_xui_free(_xui_text_view, view, view)
+	_xui_free(view)
 }
 
 void xui_text_view_set_text(void * view, VMSTR str) {

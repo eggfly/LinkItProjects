@@ -72,7 +72,7 @@ void xui_release() {
 	g_frame_group[0] = NULL;
 }
 
-void _init_view(void * view, _render_func func) {
+void _init_view(xui_view view, _render_func func) {
 #ifdef XUI_DEBUG
 	vm_log_debug("_init_view");
 	vm_log_debug("_render_func pointer: %d", func);
@@ -92,9 +92,9 @@ void xui_validate(xui_page page) {
 #ifdef XUI_DEBUG
 	vm_log_debug("xui_validate");
 #endif
-	struct _xui_page * p_page = (struct _xui_page *) page.page;
+	struct _xui_page * p_page = (struct _xui_page *) page;
 	int i;
-	void ** views = p_page->views;
+	xui_view * views = p_page->views;
 	int view_count = p_page->view_count;
 #ifdef XUI_DEBUG
 	vm_log_debug("_xui_page->views ** : %d", views);
@@ -106,12 +106,8 @@ void xui_validate(xui_page page) {
 	SCREEN_HEIGHT);
 
 	for (i = 0; i < view_count; i++) {
-		void * view = views[i];
-		xui_view * p_view = (xui_view*) view;
-		void * p_internal_view = p_view->view;
-		struct _xui_view * this = (struct _xui_view *) p_internal_view;
+		struct _xui_view * this = (struct _xui_view *) views[i];
 #ifdef XUI_DEBUG
-		vm_log_debug("_xui_page->views[0] * : %d", p_view);
 		vm_log_debug("_xui_view *: %d", this);
 		vm_log_debug("_xui_view->width: %d", this->width);
 		vm_log_debug("_xui_view->height: %d", this->height);

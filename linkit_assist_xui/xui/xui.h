@@ -6,21 +6,12 @@
 
 #define XUI_MAX_CHAR_LENGTH 260
 
-// TODO convert to void * typedef
-typedef struct {
-	void * page;
-} xui_page;
+typedef void * xui_page;
 
-// TODO convert to void * typedef
 // TODO give them as a public base type to use
-typedef struct {
-	void * view;
-} xui_view;
+typedef void * xui_view;
 
-// TODO convert to void * typedef
-typedef struct {
-	void * view;
-} xui_text_view;
+typedef void * xui_text_view;
 
 typedef enum {
 	XUI_TOP_LEFT,
@@ -38,29 +29,33 @@ void xui_init();
 void xui_release();
 void xui_lcd_init();
 void xui_lcd_backlight_level(VMUINT32 ulValue);
+
 void xui_touch_init();
 
-VMINT xui_view_get_x(void * view);
-VMINT xui_view_get_y(void * view);
-VMINT xui_view_get_width(void * view);
-VMINT xui_view_get_height(void * view);
+VMINT xui_view_get_x(xui_view view);
+VMINT xui_view_get_y(xui_view view);
+VMINT xui_view_get_width(xui_view view);
+VMINT xui_view_get_height(xui_view view);
 
-void xui_view_set_visibility(void * view, VMBOOL visibility);
-void xui_view_set_x(void * view, VMINT value);
-void xui_view_set_y(void * view, VMINT value);
-void xui_view_set_width(void * view, VMINT value);
-void xui_view_set_height(void * view, VMINT value);
-void xui_view_set_background_color(void * view, vm_graphic_color_argb_t color);
+void xui_view_set_visibility(xui_view view, VMBOOL visibility);
+void xui_view_set_x(xui_view view, VMINT value);
+void xui_view_set_y(xui_view view, VMINT value);
+void xui_view_set_width(xui_view view, VMINT value);
+void xui_view_set_height(xui_view view, VMINT value);
+void xui_view_set_background_color(xui_view view,
+		vm_graphic_color_argb_t color);
 
 xui_text_view xui_init_text_view();
-void xui_text_view_set_text(void * view, VMSTR str);
-void xui_text_view_set_text_wide(void * view, VMWSTR wstr);
-void xui_text_view_set_text_color(void * view, vm_graphic_color_argb_t color);
-void xui_text_view_set_gravity(void *view, xui_gravity gravity);
+void xui_text_view_set_text(xui_text_view view, VMSTR str);
+void xui_text_view_set_text_wide(xui_text_view view, VMWSTR wstr);
+void xui_text_view_set_text_color(xui_text_view view,
+		vm_graphic_color_argb_t color);
+void xui_text_view_set_gravity(xui_text_view view, xui_gravity gravity);
 void xui_free_text_view(xui_text_view view);
 
-xui_page xui_init_page(void ** views, VMINT view_count);
-void xui_page_set_background_color(void * page, vm_graphic_color_argb_t color);
+xui_page xui_init_page(xui_view * views, VMINT view_count);
+void xui_page_set_background_color(xui_page page,
+		vm_graphic_color_argb_t color);
 void xui_free_page(xui_page page);
 
 // void xui_set_visibility(xui_view * view, VMCHAR visibility);

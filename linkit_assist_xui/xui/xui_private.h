@@ -37,6 +37,4 @@ struct _xui_text_view {
 
 void _init_view(void * view, _render_func func);
 
-#define _xui_free(inner_type, var, member_name) \
-	struct inner_type * _p_view = (struct inner_type *) var.member_name; \
-	vm_free(_p_view);
+#define _xui_free(p_var) vm_free(p_var);
