@@ -14,7 +14,7 @@ struct _xui_page {
 
 struct _xui_view;
 
-typedef void (*_render_func)(struct _xui_view * view);
+typedef void(*_render_func)(struct _xui_view * view);
 
 #define XUI_VIEW_MEMBERS \
 	VMINT x, y; \
@@ -22,6 +22,8 @@ typedef void (*_render_func)(struct _xui_view * view);
 	VMBOOL visibility; \
 	vm_graphic_color_argb_t background_color; \
 	_render_func render; \
+	touch_event_callback touch_event_cb; \
+	// end of members
 
 struct _xui_view {
 	XUI_VIEW_MEMBERS

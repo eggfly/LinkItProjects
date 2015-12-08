@@ -5,11 +5,11 @@
 #include "vmlog.h"
 
 /* Use one frame temporary */
-vm_graphic_frame_t g_frame[1] = { };
+vm_graphic_frame_t g_frame[1] = {};
 static VMUINT8* g_font_pool;
 
 /* For frame blt */
-const static vm_graphic_frame_t* g_frame_group[FRAME_COUNT] = { };
+const static vm_graphic_frame_t* g_frame_group[FRAME_COUNT] = {};
 
 static void _font_init(void) {
 #ifdef XUI_DEBUG
@@ -20,13 +20,15 @@ static void _font_init(void) {
 
 	result = vm_graphic_get_font_pool_size(0, 0, 0, &pool_size);
 	if (VM_IS_SUCCEEDED(result)) {
-		g_font_pool = (VMUINT8*) vm_malloc(pool_size);
+		g_font_pool = (VMUINT8*)vm_malloc(pool_size);
 		if (NULL != g_font_pool) {
 			vm_graphic_init_font_pool(g_font_pool, pool_size);
-		} else {
+		}
+		else {
 			vm_log_info("allocate font pool memory failed");
 		}
-	} else {
+	}
+	else {
 		vm_log_info("get font pool size failed, result:%d", result);
 	}
 }
@@ -79,6 +81,7 @@ void _init_view(xui_view view, _render_func func) {
 #endif
 	struct _xui_view * p = (struct _xui_view *) view;
 	p->render = func;
+	p->touch_event_cb = NULL;
 	p->x = p->y = 0;
 	p->width = p->height = 80; // TODO
 	p->visibility = 1;
@@ -103,7 +106,7 @@ void xui_validate(xui_page page) {
 	// draw background
 	vm_graphic_set_color(p_page->background_color);
 	vm_graphic_draw_solid_rectangle(&g_frame[0], 0, 0, SCREEN_WIDTH,
-	SCREEN_HEIGHT);
+		SCREEN_HEIGHT);
 
 	for (i = 0; i < view_count; i++) {
 		struct _xui_view * this = (struct _xui_view *) views[i];
@@ -118,12 +121,12 @@ void xui_validate(xui_page page) {
 			// draw view background
 			vm_graphic_set_color(this->background_color);
 			vm_graphic_draw_solid_rectangle(&g_frame[0], this->x, this->y,
-					this->width, this->height);
+				this->width, this->height);
 			// view sub type's render logic (virtual function)
 			this->render(this);
 		}
 	}
-	vm_graphic_point_t positions[FRAME_COUNT] = { };
+	vm_graphic_point_t positions[FRAME_COUNT] = {};
 	/* composite and display */
 	vm_graphic_blt_frame(g_frame_group, positions, FRAME_COUNT);
 	vm_log_debug("xui_validate finish");
@@ -186,4 +189,9 @@ void xui_view_set_visibility(void * view, VMBOOL visibility) {
 void xui_view_set_background_color(void * view, vm_graphic_color_argb_t color) {
 	struct _xui_view * p_view = (struct _xui_view *) view;
 	p_view->background_color = color;
+}
+
+void xui_view_set_touch_event_callback(xui_view view, touch_event_callback callback) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->touch_event_cb = callback;
 }
