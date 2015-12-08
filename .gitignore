@@ -4,6 +4,12 @@
 .metadata
 RemoteSystemsTempFiles
 
+# visual studio
+*.sdf
+*.suo
+*.opensdf
+Debug
+
 # compiler
 *.res
 # ELF 32-bit LSB  relocatable, ARM, EABI5 version 1 (SYSV), not stripped

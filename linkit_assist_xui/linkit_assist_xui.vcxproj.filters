@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\xui">
+      <UniqueIdentifier>{3e6bf65f-69ac-4ef3-bb21-9f48e6576145}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\lcd_sitronix_st7789s.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\tp_goodix_gt9xx.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\tp_i2c.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\xui.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\xui_lcd.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\xui_page.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\xui_text_view.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+    <ClCompile Include="xui\xui_touch.c">
+      <Filter>Source Files\xui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xui\tp_goodix_gt9xx.h">
+      <Filter>Source Files\xui</Filter>
+    </ClInclude>
+    <ClInclude Include="xui\lcd_sitronix_st7789s.h">
+      <Filter>Source Files\xui</Filter>
+    </ClInclude>
+    <ClInclude Include="xui\tp_i2c.h">
+      <Filter>Source Files\xui</Filter>
+    </ClInclude>
+    <ClInclude Include="xui\xui.h">
+      <Filter>Source Files\xui</Filter>
+    </ClInclude>
+    <ClInclude Include="xui\xui_private.h">
+      <Filter>Source Files\xui</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

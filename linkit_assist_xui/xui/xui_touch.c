@@ -4,3 +4,7 @@
 void xui_touch_init(void) {
 	tp_gt9xx_init();
 }
+
+void xui_handle_touch(xui_page page) {
+
+}
