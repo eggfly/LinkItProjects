@@ -59,6 +59,9 @@ static vm_graphic_color_argb_t white() {
 	return color;
 }
 
+void touch_event_cb(xui_view view, VM_TOUCH_EVENT event, VMINT x, VMINT y) {
+}
+
 /* The callback to be invoked by the system engine. */
 void handle_system_event(VMINT message, VMINT param) {
 	switch (message) {
@@ -79,6 +82,7 @@ void handle_system_event(VMINT message, VMINT param) {
 				xui_view_set_y(view, 30 + row * 30);
 				xui_view_set_width(view, 60);
 				xui_view_set_height(view, 30);
+				xui_view_set_touch_event_callback(view, touch_event_cb);
 				views[row * COLUMNS + col] = &texts[row][col];
 			}
 		}
