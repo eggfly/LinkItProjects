@@ -60,6 +60,8 @@ static vm_graphic_color_argb_t white() {
 }
 
 void touch_event_cb(xui_view view, VM_TOUCH_EVENT event, VMINT x, VMINT y) {
+	VMINT id = xui_view_get_id(view);
+	vm_log_debug("touch callback: %d", id);
 }
 
 /* The callback to be invoked by the system engine. */
@@ -83,7 +85,9 @@ void handle_system_event(VMINT message, VMINT param) {
 				xui_view_set_width(view, 60);
 				xui_view_set_height(view, 30);
 				xui_view_set_touch_event_callback(view, touch_event_cb);
-				views[row * COLUMNS + col] = &texts[row][col];
+				VMINT index = row * COLUMNS + col;
+				xui_view_set_id(view, index);
+				views[index] = &texts[row][col];
 			}
 		}
 		xui_text_view_set_text(texts[0][0], (VMCHAR *) "1");

@@ -17,6 +17,7 @@ struct _xui_view;
 typedef void(*_render_func)(struct _xui_view * view);
 
 #define XUI_VIEW_MEMBERS \
+	VMINT id; \
 	VMINT x, y; \
 	VMINT width, height; \
 	VMBOOL visibility; \

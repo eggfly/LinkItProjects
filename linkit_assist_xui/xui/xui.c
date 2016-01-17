@@ -141,6 +141,12 @@ static void _free_frame(vm_graphic_frame_t *frame) {
 	frame->buffer_length = 0;
 }
 
+// getters
+VMINT xui_view_get_id(void * view) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	return p_view->id;
+}
+
 VMINT xui_view_get_x(void * view) {
 	struct _xui_view * p_view = (struct _xui_view *) view;
 	return p_view->x;
@@ -159,6 +165,12 @@ VMINT xui_view_get_width(void * view) {
 VMINT xui_view_get_height(void * view) {
 	struct _xui_view * p_view = (struct _xui_view *) view;
 	return p_view->height;
+}
+
+// setters
+void xui_view_set_id(xui_view view, VMINT value) {
+	struct _xui_view * p_view = (struct _xui_view *) view;
+	p_view->id = value;
 }
 
 void xui_view_set_x(void * view, VMINT value) {

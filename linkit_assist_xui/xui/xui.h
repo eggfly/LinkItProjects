@@ -34,12 +34,14 @@ void xui_lcd_backlight_level(VMUINT32 ulValue);
 
 void xui_touch_init();
 
+VMINT xui_view_get_id(xui_view view);
 VMINT xui_view_get_x(xui_view view);
 VMINT xui_view_get_y(xui_view view);
 VMINT xui_view_get_width(xui_view view);
 VMINT xui_view_get_height(xui_view view);
 
 void xui_view_set_visibility(xui_view view, VMBOOL visibility);
+void xui_view_set_id(xui_view view, VMINT value);
 void xui_view_set_x(xui_view view, VMINT value);
 void xui_view_set_y(xui_view view, VMINT value);
 void xui_view_set_width(xui_view view, VMINT value);
