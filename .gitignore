@@ -8,6 +8,7 @@ RemoteSystemsTempFiles
 *.sdf
 *.suo
 *.opensdf
+
 Debug
 
 # compiler
